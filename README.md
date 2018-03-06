@@ -31,25 +31,25 @@ Configurate fw/main.php:
 
 Initialize framework in file with:
 
-     include('path_to_fw/main.php'); 
-     $fw->set('pagename');
+    include('path_to_fw/main.php'); 
+    $fw->set('pagename');
 
- Output default head elements: 
+Output default head elements: 
  
-     $fw->commonMeta()
-     $fw->title()
-     $fw->commonLink()
-     $fw->commonScript()
+    $fw->commonMeta();   // outputs fw/common/meta.html
+    $fw->title();        // outputs title
+    $fw->commonLink();   // outputs fw/common/link.html
+    $fw->commonScript(); // outputs fw/common/script.html
 
- Output specific head elements for a pagename:
+Output specific head elements for a pagename:
  
-     $fw->fullMeta()
-     $fw->title()
-     $fw->fullLink()
-     $fw->fullScript()
+    $fw->fullMeta();   // outputs commonMeta() and file from setMetas()
+    $fw->title();      // outputs title
+    $fw->fullLink();   // outputs commonLink() and file from setLinks()
+    $fw->fullScript(); // outputs commonScript() and file from setScripts()
 
- Output html code:
+Output html code:
  
-     $fw->header()
-     $fw->navbar()
-     $fw->footer()
+    $fw->header(); // outputs fw/common/header.html file
+    $fw->navbar(); // outputs fw/common/navbar.html file
+    $fw->footer(); // outputs fw/common/footer.html file
