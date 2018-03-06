@@ -34,7 +34,7 @@ Configurate fw/main.php:
 Initialize framework in file with:
 
     include('path_to_fw/main.php'); 
-    $fw->set('pagename');
+    $fw->set('setname');
 
 Output default head elements: 
  
