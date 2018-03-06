@@ -53,5 +53,3 @@ Initialize framework in file with:
      $fw->header()
      $fw->navbar()
      $fw->footer()
-
- Made With ♥ By Patryk Janiak (https://morswin22.github.io/)
