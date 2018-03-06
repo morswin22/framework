@@ -28,6 +28,8 @@ Configurate fw/main.php:
           // custom scripts links for sets
           // ex. 'page.php' => '{{DOMAIN_URL}}fw/uncommon/page_script.html'
      ));
+     
+     $fw->setNavbarCurrent('nav-active'); // sets navbar element current class name, default: active
 
 Initialize framework in file with:
 
