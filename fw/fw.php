@@ -136,7 +136,8 @@ class Framework {
             if (is_file(__DIR__.'/users/'.$data[$this->user_idp].'.json')) {
                 $user = $this->userConvert(json_decode(file_get_contents(__DIR__.'/users/'.$data[$this->user_idp].'.json'),true));
                 if ($user[$this->user_chkp] === $data[$this->user_chkp]) {
-                    echo 'logged';
+                    $_SESSION['fw-user'] = $user;
+                    $this->user = $user;
                 } else {
                     $this->error(500, 'Wrong chkp');
                 }
@@ -148,7 +149,31 @@ class Framework {
         }
     }
 
-    function userConvert($user_raw) {
+    function logout() {
+        unset($this->user);
+        unset($_SESSION['fw-user']);
+    }
+
+    function isLogged() {
+        if (isset($this->user)) {
+            return true;
+        } else {
+            if (isset($_SESSION['fw-user'])) {
+                $this->login($_SESSION['fw-user']);
+                return $this->isLogged();
+            } else {
+                return false;
+            }
+        }
+    }
+
+    private function login_cache() {
+        if ($this->isLogged() == true) {
+            $this->login($_SESSION['fw-user']);
+        }
+    }
+
+    private function userConvert($user_raw) {
         $user = array();
         foreach($this->user_params as $key => $param) {
             $user[$param] = $user_raw[$key];
@@ -172,6 +197,7 @@ class Framework {
         $this->user_params = $db_params;
         $this->user_idp = $id_param;     // idp  => id param
         $this->user_chkp = $check_param; // chkp => check for login param
+        $this->login_cache();
     }
 
     function setNavbarCurrent($new) {
