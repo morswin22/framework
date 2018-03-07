@@ -1,7 +1,7 @@
 # framework
 Made With ♥ By Patryk Janiak (https://morswin22.github.io/)
 
-# how to use
+## how to use
 Create new project with framework:
 
     git clone https://github.com/morswin22/framework.git your_project_dir
@@ -60,13 +60,13 @@ Output html code:
     $fw->navbar(); // outputs fw/common/navbar.html file
     $fw->footer(); // outputs fw/common/footer.html file
 
-# tricks
+## tricks
 You can pass set's name into framework functions like: 
 
-    $fw->fullMeta('setname'); 
-    $fw->title('setname');
-    $fw->fullLink('setname');
-    $fw->fullScript('setname');
+1. $fw->fullMeta('setname'); 
+1. $fw->title('setname');
+1. $fw->fullLink('setname');
+1. $fw->fullScript('setname');
 
 in order to get specific title, meta tags, links or scripts for given set's name
 
