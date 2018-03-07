@@ -12,7 +12,7 @@ Configurate `fw/main.php`:
 $fw = new Framework(YourDomainURL);
 
 $fw->setSets(array(
-    // sets names
+    // sets' names
     // ex. 'page.php'
 ));
 
