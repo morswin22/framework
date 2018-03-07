@@ -104,6 +104,7 @@ Login extension functions:
 * `register` - accepts an array with all filled database cols
 * `login`    - accepts an array with id and checking parameter 
 * `logout`   - does not take any arguments
+* `isLogged` - returns true if user is logged in
 * `getUsers` - returns an array of all users from `fw/users/`
 
 ## Navbar tricks
