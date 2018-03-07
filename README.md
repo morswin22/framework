@@ -2,6 +2,10 @@
 Made With ♥ By Patryk Janiak (https://morswin22.github.io/)
 
 # how to use
+Create new project with framework:
+
+     git clone https://github.com/morswin22/framework.git your_project_dir
+
 Configurate fw/main.php:
 
      $fw = new Framework(YourDomainURL);
