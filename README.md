@@ -59,3 +59,16 @@ Output html code:
     $fw->header(); // outputs fw/common/header.html file
     $fw->navbar(); // outputs fw/common/navbar.html file
     $fw->footer(); // outputs fw/common/footer.html file
+
+# tricks
+You can pass set's name into framework functions like: 
+
+fullMeta, title, fullLink, fullScript
+
+in order to get specific title, meta tags, links or scripts for given set's name
+
+    // example:
+    $fw->set('page1.php');
+
+    $fw->title();            // will output title for set with name 'page1.php'
+    $fw->title('page2.php'); // will output title for set with name 'page2.php' 
