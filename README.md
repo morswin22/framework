@@ -63,7 +63,10 @@ Output html code:
 # tricks
 You can pass set's name into framework functions like: 
 
-fullMeta, title, fullLink, fullScript
+    $fw->fullMeta('setname'); 
+    $fw->title('setname');
+    $fw->fullLink('setname');
+    $fw->fullScript('setname');
 
 in order to get specific title, meta tags, links or scripts for given set's name
 
