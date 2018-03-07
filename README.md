@@ -101,9 +101,9 @@ array('name', 'pass', 'email', 'email-confirmed'), // list of all datebase cols'
 ```
 
 Login extension functions:
-* `register` - accepts array with all database cols' names
-* `login`    - accepts array with id and checking parameter 
-* `logout`   - does not take arguments
+* `register` - accepts an array with all database cols' names
+* `login`    - accepts an array with id and checking parameter 
+* `logout`   - does not take any arguments
 * `getUsers` - returns an array of all users from `fw/users/`
 
 ## Navbar tricks
