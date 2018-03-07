@@ -88,6 +88,24 @@ $fw->title();            // will output title for set with name 'page1.php'
 $fw->title('page2.php'); // will output title for set with name 'page2.php' 
 ```
 
+## Login extension
+Put `prepareUsers` framework function in your `fw/main.php`
+
+```php
+// example user database structure
+$fw->prepareUsers(
+array('name', 'pass', 'email', 'email-confirmed'), // list of all datebase cols' names
+    'name',                                        // unique id col's name
+    'pass'                                         // col's name used to verifying login
+);
+```
+
+Login extension functions:
+* `register` - accepts array with all database cols' names
+* `login`    - accepts array with id and checking parameter 
+* `logout`   - does not take arguments
+* `getUsers` - returns an array of all users from `fw/users/`
+
 ## Navbar tricks
 In your `fw/common/navbar.html` you can place in class special element `{{is:setname}}`
 
