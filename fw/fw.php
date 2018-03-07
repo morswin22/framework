@@ -3,6 +3,9 @@
 class Framework {
 
     public function __construct($domainURL) {
+
+        @session_start();
+
         $this->domainURL = $domainURL;
 
         $this->commonMeta = file_get_contents($this->domainURL.'fw/common/meta.html');
@@ -99,10 +102,76 @@ class Framework {
         }
     }
 
+    function register($data) {
+        // check for every param
+        $checksum = true;
+        foreach($this->user_params as $param) {
+            if (!isset($data[$param])) {
+                $checksum = false;
+            }
+        }
+
+        if ($checksum == true) {
+            if (!is_file(__DIR__.'/users/'.$data[$this->user_idp].'.json')) {
+                $new_user = array();
+                foreach($this->user_params as $param) {
+                    $new_user[] = $data[$param];
+                }
+                file_put_contents(__DIR__.'/users/'.$data[$this->user_idp].'.json',json_encode($new_user));
+            } else {
+                $this->error(500, 'This idp is taken');
+            }
+        } else {
+            $this->error(500, 'Register checksum does not add up');
+        }
+    }
+
+    function login($data) {
+        // check for params (2)
+        $checksum = true;
+        if (!isset($data[$this->user_idp]))  $checksum = false;
+        if (!isset($data[$this->user_chkp])) $checksum = false;
+
+        if ($checksum == true) {
+            if (is_file(__DIR__.'/users/'.$data[$this->user_idp].'.json')) {
+                $user = $this->userConvert(json_decode(file_get_contents(__DIR__.'/users/'.$data[$this->user_idp].'.json'),true));
+                if ($user[$this->user_chkp] === $data[$this->user_chkp]) {
+                    echo 'logged';
+                } else {
+                    $this->error(500, 'Wrong chkp');
+                }
+            } else {
+                $this->error(500, 'This user does not exist');
+            }
+        } else {
+            $this->error(500, 'Login cheksum does not add up');
+        }
+    }
+
+    function userConvert($user_raw) {
+        $user = array();
+        foreach($this->user_params as $key => $param) {
+            $user[$param] = $user_raw[$key];
+        }
+        return $user;
+    }
+
+    function getUsers() {
+        $users = array_slice(scandir(__DIR__.'/users'),2);
+        $gitkeep = array_search('.gitkeep',$users);
+        unset($users[$gitkeep]);
+        foreach($users as $fname) {
+            $this->users[] = $this->userConvert(json_decode(file_get_contents(__DIR__.'/users/'.$fname),true));
+        }
+        return $this->users;
+    }
+
     // set
 
-    function getLogins() {
-        $this->logins = array_slice(scandir('users/'),2);
+    function prepareUsers($db_params,$id_param,$check_param) {
+        $this->user_params = $db_params;
+        $this->user_idp = $id_param;     // idp  => id param
+        $this->user_chkp = $check_param; // chkp => check for login param
     }
 
     function setNavbarCurrent($new) {
