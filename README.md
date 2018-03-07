@@ -4,36 +4,36 @@ Made With ♥ By Patryk Janiak (https://morswin22.github.io/)
 # how to use
 Create new project with framework:
 
-     git clone https://github.com/morswin22/framework.git your_project_dir
+    git clone https://github.com/morswin22/framework.git your_project_dir
 
 Configurate fw/main.php:
 
-     $fw = new Framework(YourDomainURL);
+    $fw = new Framework(YourDomainURL);
 
-     $fw->setSets(array(
-          // sets names
-          // ex. 'page.php'
-     ));
+    $fw->setSets(array(
+        // sets names
+        // ex. 'page.php'
+    ));
 
-     $fw->setTitles(array(
-          // titles for sets
-          // ex. 'page.php' => 'Title'
-     ));
+    $fw->setTitles(array(
+        // titles for sets
+        // ex. 'page.php' => 'Title'
+    ));
 
-     $fw->setMetas(array(
-          // custom meta tags files for sets
-          // ex. 'page.php' => '{{DOMAIN_URL}}fw/uncommon/page_meta.html'
-     ));
-     $fw->setLinks(array(
-          // custom stylesheets for sets
-          // ex. 'page.php' => '{{DOMAIN_URL}}fw/uncommon/page_link.html'
-     ));
-     $fw->setScripts(array(
-          // custom scripts links for sets
-          // ex. 'page.php' => '{{DOMAIN_URL}}fw/uncommon/page_script.html'
-     ));
+    $fw->setMetas(array(
+        // custom meta tags files for sets
+        // ex. 'page.php' => '{{DOMAIN_URL}}fw/uncommon/page_meta.html'
+    ));
+    $fw->setLinks(array(
+        // custom stylesheets for sets
+        // ex. 'page.php' => '{{DOMAIN_URL}}fw/uncommon/page_link.html'
+    ));
+    $fw->setScripts(array(
+        // custom scripts links for sets
+        // ex. 'page.php' => '{{DOMAIN_URL}}fw/uncommon/page_script.html'
+    ));
      
-     $fw->setNavbarCurrent('nav-active'); // sets navbar element current class name, default: active
+    $fw->setNavbarCurrent('nav-active'); // sets navbar element current class name, default: active
 
 Initialize framework in file with:
 
