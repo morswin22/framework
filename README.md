@@ -63,10 +63,10 @@ Output html code:
 ## tricks
 You can pass set's name into framework functions like: 
 
-1. *fullMeta*; 
-1. *title*;
-1. *fullLink*;
-1. *fullScript*;
+1. *fullMeta*
+1. *title*
+1. *fullLink*
+1. *fullScript*
 
 in order to get specific title, meta tags, links or scripts for given set's name
 
