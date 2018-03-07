@@ -101,6 +101,10 @@ class Framework {
 
     // set
 
+    function getLogins() {
+        $this->logins = array_slice(scandir('users/'),2);
+    }
+
     function setNavbarCurrent($new) {
         $this->navbarCurrent = $new;
     }
