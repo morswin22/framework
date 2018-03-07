@@ -1,12 +1,12 @@
-# framework
+# Framework
 Made With ♥ By Patryk Janiak (https://morswin22.github.io/)
 
-## how to use
+## How to use
 Create new project with framework:
 
     git clone https://github.com/morswin22/framework.git your_project_dir
 
-Configurate fw/main.php:
+Configurate `fw/main.php`:
 
     $fw = new Framework(YourDomainURL);
 
@@ -60,13 +60,13 @@ Output html code:
     $fw->navbar(); // outputs fw/common/navbar.html file
     $fw->footer(); // outputs fw/common/footer.html file
 
-## tricks
+## Using different set's name
 You can pass set's name into framework functions like: 
 
-1. *fullMeta*
-1. *title*
-1. *fullLink*
-1. *fullScript*
+* `fullMeta`
+* `title`
+* `fullLink`
+* `fullScript`
 
 in order to get specific title, meta tags, links or scripts for given set's name
 
@@ -75,3 +75,11 @@ in order to get specific title, meta tags, links or scripts for given set's name
 
     $fw->title();            // will output title for set with name 'page1.php'
     $fw->title('page2.php'); // will output title for set with name 'page2.php' 
+
+## Navbar tricks
+In your `fw/common/navbar.html` you can place in class special element `{{is:setname}}`.
+When `$fw->navbar()` is triggered, it will output navbar.html and change this special element into `active` if current set's name matches with the `{{is:setname}}`
+
+If you have run `$fw->setNavbarCurrent('classNameForActiveElement')` then it will change the `{{is:setname}}` into a new given class name
+
+You can run `$fw->navbar('setname')` so that it will try to match given set's name with the `{{is:setname}}` special tag
