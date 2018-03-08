@@ -139,9 +139,11 @@ class Framework {
                     $_SESSION['fw-user'] = $user;
                     $this->user = $user;
                 } else {
+                    $this->logout();
                     $this->error(500, 'Wrong chkp');
                 }
             } else {
+                $this->logout();
                 $this->error(500, 'This user does not exist');
             }
         } else {
@@ -150,8 +152,8 @@ class Framework {
     }
 
     function logout() {
-        unset($this->user);
-        unset($_SESSION['fw-user']);
+        if (isset($this->user)) unset($this->user);
+        if (isset($_SESSION['fw-user'])) unset($_SESSION['fw-user']);
     }
 
     function isLogged() {
@@ -173,12 +175,55 @@ class Framework {
         }
     }
 
+    function edit_user($user_raw, $p_name, $p_value) {
+        if ($p_name == $this->user_idp) {
+            $this->error(500, 'Cannot change idp value in existing user');
+        } else {
+            $id = $user_raw[$this->user_idp];
+            if (is_file(__DIR__.'/users/'.$id.'.json')) {
+                $user = $this->userConvert(json_decode(file_get_contents(__DIR__.'/users/'.$id.'.json'),true));
+                if (isset($user[$p_name])) {
+                    $user[$p_name] = $p_value;
+                    file_put_contents(__DIR__.'/users/'.$id.'.json',json_encode($this->userConvertRaw($user)));
+                    if (isset($this->user)) {
+                        if ($this->user[$this->user_idp] == $user[$this->user_idp]) {
+                            $this->user = $user;
+                            if ($this->user_chkp == $p_name) {
+                                $this->login($user);
+                            }
+                        }
+                    }
+                } else {
+                    $this->error(500, 'Undefined param in user structure -> '.$p_name);
+                }
+            } else {
+                $this->error(500, 'Cannot find user from idp -> '.$id);
+            }
+        }
+    }
+
+    function edit($p_name, $p_value) {
+        if ($this->isLogged()) {
+            $this->edit_user($this->user, $p_name, $p_value);
+        } else {
+            $this->error(500, 'Currently there is no logged user');
+        }
+    }
+
     private function userConvert($user_raw) {
         $user = array();
         foreach($this->user_params as $key => $param) {
             $user[$param] = $user_raw[$key];
         }
         return $user;
+    }
+
+    private function userConvertRaw($user) {
+        $user_raw = array();
+        foreach($this->user_params as $key => $param) {
+            $user_raw[$key] = $user[$param];
+        }
+        return $user_raw;
     }
 
     function getUsers() {

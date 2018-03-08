@@ -33,8 +33,6 @@ $fw->setScripts(array(
     // custom scripts links for sets
     // ex. 'page.php' => '{{DOMAIN_URL}}fw/uncommon/page_script.html'
 ));
-     
-$fw->setNavbarCurrent('nav-active'); // sets navbar element current class name, default: active
 ```
 
 Initialize framework in file with:
@@ -105,7 +103,7 @@ Login extension functions:
 * `login`    - accepts an array with id and checking parameter 
 * `logout`   - does not take any arguments
 * `isLogged` - returns true if user is logged in
-* `getUsers` - returns an array of all users from `fw/users/`
+* `getUsers` - returns an array of all users
 
 ## Navbar tricks
 In your `fw/common/navbar.html` you can place in class special element `{{is:setname}}`
