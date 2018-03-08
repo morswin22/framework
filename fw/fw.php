@@ -3,6 +3,9 @@
 class Framework {
 
     public function __construct($domainURL) {
+
+        @session_start();
+
         $this->domainURL = $domainURL;
 
         $this->commonMeta = file_get_contents($this->domainURL.'fw/common/meta.html');
@@ -99,7 +102,148 @@ class Framework {
         }
     }
 
+    function register($data) {
+        // check for every param
+        $checksum = true;
+        foreach($this->user_params as $param) {
+            if (!isset($data[$param])) {
+                $checksum = false;
+            }
+        }
+
+        if ($checksum == true) {
+            if (!is_file(__DIR__.'/users/'.$data[$this->user_idp].'.json')) {
+                $new_user = array();
+                foreach($this->user_params as $param) {
+                    $new_user[] = $data[$param];
+                }
+                file_put_contents(__DIR__.'/users/'.$data[$this->user_idp].'.json',json_encode($new_user));
+            } else {
+                $this->error(500, 'This idp is taken');
+            }
+        } else {
+            $this->error(500, 'Register checksum does not add up');
+        }
+    }
+
+    function login($data) {
+        // check for params (2)
+        $checksum = true;
+        if (!isset($data[$this->user_idp]))  $checksum = false;
+        if (!isset($data[$this->user_chkp])) $checksum = false;
+
+        if ($checksum == true) {
+            if (is_file(__DIR__.'/users/'.$data[$this->user_idp].'.json')) {
+                $user = $this->userConvert(json_decode(file_get_contents(__DIR__.'/users/'.$data[$this->user_idp].'.json'),true));
+                if ($user[$this->user_chkp] === $data[$this->user_chkp]) {
+                    $_SESSION['fw-user'] = $user;
+                    $this->user = $user;
+                } else {
+                    $this->logout();
+                    $this->error(500, 'Wrong chkp');
+                }
+            } else {
+                $this->logout();
+                $this->error(500, 'This user does not exist');
+            }
+        } else {
+            $this->error(500, 'Login cheksum does not add up');
+        }
+    }
+
+    function logout() {
+        if (isset($this->user)) unset($this->user);
+        if (isset($_SESSION['fw-user'])) unset($_SESSION['fw-user']);
+    }
+
+    function isLogged() {
+        if (isset($this->user)) {
+            return true;
+        } else {
+            if (isset($_SESSION['fw-user'])) {
+                $this->login($_SESSION['fw-user']);
+                return $this->isLogged();
+            } else {
+                return false;
+            }
+        }
+    }
+
+    private function login_cache() {
+        if ($this->isLogged() == true) {
+            $this->login($_SESSION['fw-user']);
+        }
+    }
+
+    function edit_user($user_raw, $p_name, $p_value) {
+        if ($p_name == $this->user_idp) {
+            $this->error(500, 'Cannot change idp value in existing user');
+        } else {
+            $id = $user_raw[$this->user_idp];
+            if (is_file(__DIR__.'/users/'.$id.'.json')) {
+                $user = $this->userConvert(json_decode(file_get_contents(__DIR__.'/users/'.$id.'.json'),true));
+                if (isset($user[$p_name])) {
+                    $user[$p_name] = $p_value;
+                    file_put_contents(__DIR__.'/users/'.$id.'.json',json_encode($this->userConvertRaw($user)));
+                    if (isset($this->user)) {
+                        if ($this->user[$this->user_idp] == $user[$this->user_idp]) {
+                            $this->user = $user;
+                            if ($this->user_chkp == $p_name) {
+                                $this->login($user);
+                            }
+                        }
+                    }
+                } else {
+                    $this->error(500, 'Undefined param in user structure -> '.$p_name);
+                }
+            } else {
+                $this->error(500, 'Cannot find user from idp -> '.$id);
+            }
+        }
+    }
+
+    function edit($p_name, $p_value) {
+        if ($this->isLogged()) {
+            $this->edit_user($this->user, $p_name, $p_value);
+        } else {
+            $this->error(500, 'Currently there is no logged user');
+        }
+    }
+
+    private function userConvert($user_raw) {
+        $user = array();
+        foreach($this->user_params as $key => $param) {
+            $user[$param] = $user_raw[$key];
+        }
+        return $user;
+    }
+
+    private function userConvertRaw($user) {
+        $user_raw = array();
+        foreach($this->user_params as $key => $param) {
+            $user_raw[$key] = $user[$param];
+        }
+        return $user_raw;
+    }
+
+    function getUsers() {
+        $users = array_slice(scandir(__DIR__.'/users'),2);
+        $gitkeep = array_search('.gitkeep',$users);
+        unset($users[$gitkeep]);
+        foreach($users as $fname) {
+            $this->users[] = $this->userConvert(json_decode(file_get_contents(__DIR__.'/users/'.$fname),true));
+        }
+        return $this->users;
+    }
+
     // set
+
+    function prepareUsers($db_params,$id_param,$check_param) {
+        $this->user_params = $db_params;
+        $this->user_idp = $id_param;     // idp  => id param
+        $this->user_chkp = $check_param; // chkp => check for login param
+        $this->login_cache();
+    }
 
     function setNavbarCurrent($new) {
         $this->navbarCurrent = $new;

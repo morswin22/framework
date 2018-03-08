@@ -4,6 +4,12 @@ include_once('fw.php');
 
 $fw = new Framework();
 
+$fw->prepareUsers(
+array(),
+    '',
+    ''
+);
+
 $fw->setSets(array(
     
 ));

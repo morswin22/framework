@@ -33,8 +33,6 @@ $fw->setScripts(array(
     // custom scripts links for sets
     // ex. 'page.php' => '{{DOMAIN_URL}}fw/uncommon/page_script.html'
 ));
-     
-$fw->setNavbarCurrent('nav-active'); // sets navbar element current class name, default: active
 ```
 
 Initialize framework in file with:
@@ -86,6 +84,34 @@ $fw->set('page1.php');
 
 $fw->title();            // will output title for set with name 'page1.php'
 $fw->title('page2.php'); // will output title for set with name 'page2.php' 
+```
+
+## Login extension
+Put `prepareUsers` framework function in your `fw/main.php`
+
+```php
+// example user database structure
+$fw->prepareUsers(
+array('name', 'pass', 'email', 'email-confirmed'), // list of all datebase cols' names
+    'name',                                        // unique id col's name
+    'pass'                                         // col's name used to verifying login
+);
+```
+
+Login extension functions:
+* `register` - accepts an array with all filled database cols
+* `login`    - accepts an array with id and checking parameter 
+* `logout`   - does not take any arguments
+* `isLogged` - returns true if user is logged in
+* `getUsers` - returns an array of all users
+* `edit`     - takes as argument param's name and value to change
+
+Tricks with `edit` and `edit_user` functions: 
+```php
+$fw->edit('pass','1234'); // changes pass value in currently logged user
+
+// $user_object = array('name'=>'test','pass'=>'4321','desc'=>'Lorem ipsum');
+$fw->edit_user($user_object,'pass','1234'); // changes pass value in given user
 ```
 
 ## Navbar tricks
