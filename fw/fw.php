@@ -26,6 +26,12 @@ class Framework {
         $this->footer = str_replace('{{DOMAIN_URL}}',$this->domainURL,$this->footer);
     
         $this->navbarCurrent = 'active';
+
+        $fw->setSets(array());
+        $fw->setTitles(array());
+        $fw->setMetas(array());
+        $fw->setLinks(array());
+        $fw->setScripts(array());
     }
 
     // html
