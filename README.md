@@ -104,6 +104,15 @@ Login extension functions:
 * `logout`   - does not take any arguments
 * `isLogged` - returns true if user is logged in
 * `getUsers` - returns an array of all users
+* `edit`     - takes as argument param's name and value to change
+
+Tricks with `edit` and `edit_user` functions: 
+```php
+$fw->edit('pass','1234'); // changes pass value in currently logged user
+
+// $user_object = array('name'=>'test','pass'=>'4321','desc'=>'Lorem ipsum');
+$fw->edit_user($user_object,'pass','1234'); // changes pass value in given user
+```
 
 ## Navbar tricks
 In your `fw/common/navbar.html` you can place in class special element `{{is:setname}}`
