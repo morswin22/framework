@@ -27,11 +27,11 @@ class Framework {
     
         $this->navbarCurrent = 'active';
 
-        $fw->setSets(array());
-        $fw->setTitles(array());
-        $fw->setMetas(array());
-        $fw->setLinks(array());
-        $fw->setScripts(array());
+        $this->setSets(array());
+        $this->setTitles(array());
+        $this->setMetas(array());
+        $this->setLinks(array());
+        $this->setScripts(array());
     }
 
     // html
