@@ -32,6 +32,8 @@ class Framework {
         $this->setMetas(array());
         $this->setLinks(array());
         $this->setScripts(array());
+
+        $this->db = array();
     }
 
     // html
@@ -51,6 +53,10 @@ class Framework {
     }
 
     // use
+
+    function add_db($name, $params) {
+        $this->db[$name] = new FrameworkDatabase($name, $params);
+    }
 
     function set($set) {
         if (in_array($set, $this->sets)) {
@@ -289,6 +295,125 @@ class Framework {
     private function error($err = 500, $msg='Internal error.') {
         http_response_code($err);
         die('<pre><strong>Error:</strong> '.$msg.'<hr/></pre>');
+    }
+
+}
+
+define('DB_PUSH', '');
+
+class FrameworkDatabase {
+
+    public function __construct($dbname, $cols) {
+
+        $this->name = $dbname;
+        $this->file = __DIR__.'/database/'.$dbname.'.json';
+        $this->lastquery = '';
+
+        if (!is_file($this->file)) {
+            file_put_contents($this->file,'[]');
+        }
+
+        $this->setCols($cols);
+        $this->getData();
+
+    }
+
+    function getData($p = array(), $return = false) {
+        $this->lastquery = $p;
+        $this->rows = json_decode(file_get_contents($this->file),true);
+        if (is_array($p)) {
+            $checksum = count($p);
+            $new_rows = array();
+            foreach($this->rows as $n => $row) {
+                $row = $this->convert($row);
+                $check = 0;
+                foreach($p as $param => $value) {
+                    if ($row[$param] == $value) {
+                        $check++;
+                    }
+                }
+                if ($check == $checksum) {
+                    $new_rows[$n] = $this->rows[$n];
+                }
+            }
+            $this->rows = $new_rows;
+        }
+        $this->crows = count($this->rows);
+        foreach($this->rows as $k=>$row) {
+            $this->rows[$k] = $this->convert($row);
+        }
+
+        if ($return == true) {
+            return $this->$rows;
+        }
+    }
+
+    function putData($id, $values) {
+        foreach ($this->cols as $col) {
+            if (!isset($values[$col])) {
+                $this->error(500, 'Bad values structure while putting into datebase -> '.$this->name);
+            }
+        }
+        $rows = json_decode(file_get_contents($this->file),true);
+        if ($id === DB_PUSH) {
+            $rows[] = $this->convertRaw($values);
+        } else {
+            $rows[$id] = $this->convertRaw($values);
+        }
+        file_put_contents($this->file,json_encode($rows));
+        $this->getData($this->lastquery);
+    }
+
+    function editData($id, $p) {
+        foreach ($p as $param=>$value) {
+            if (!in_array($param,$this->cols)) {
+                $this->error(500, 'Bad values structure while editing datebase -> '.$this->name);
+            }
+        }
+        $rows = json_decode(file_get_contents($this->file),true);
+        if (isset($rows[$id])) {
+            $row = $this->convert($rows[$id]);
+            foreach($p as $param=>$value){
+                $row[$param] = $value;
+            }
+            $rows[$id] = $this->convertRaw($row);
+            file_put_contents($this->file,json_encode($rows));
+            $this->getData($this->lastquery);
+        }
+    }
+
+    function rmData($id) {
+        $rows = json_decode(file_get_contents($this->file),true);
+        if (isset($rows[$id])) {
+            unset($rows[$id]);
+            file_put_contents($this->file,json_encode($rows));
+            $this->getData($this->lastquery);
+        }
+    }
+
+    private function setCols($cols) {
+        $this->cols = $cols;
+    }
+
+    function convert($data_raw) {
+        $data = array();
+        foreach($this->cols as $key => $col) {
+            $data[$col] = $data_raw[$key];
+        }
+        return $data;
+    }
+
+    function convertRaw($data) {
+        $data_raw = array();
+        foreach($this->cols as $key => $col) {
+            $data_raw[$key] = $data[$col];
+        }
+        return $data_raw;
+    }
+
+    private function error($code =500, $msg='Undefined error') {
+        http_response_code($code);
+        die('<pre><strong>Database Error:</strong> '.$msg.'<hr></pre>');
     }
 
 }
