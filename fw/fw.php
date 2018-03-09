@@ -314,7 +314,6 @@ class FrameworkDatabase {
         }
 
         $this->setCols($cols);
-        $this->getData();
 
     }
 
