@@ -106,12 +106,57 @@ Login extension functions:
 * `getUsers` - returns an array of all users
 * `edit`     - takes as argument param's name and value to change
 
-Tricks with `edit` and `edit_user` functions: 
+Tricks with `edit` and `edit_user` functions:
+
 ```php
 $fw->edit('pass','1234'); // changes pass value in currently logged user
 
 // $user_object = array('name'=>'test','pass'=>'4321','desc'=>'Lorem ipsum');
 $fw->edit_user($user_object,'pass','1234'); // changes pass value in given user
+```
+
+## Database extension
+Put `add_db` framework function in your `fw/main.php` in order to add/load a database
+
+```php
+// example db structure
+$fw->add_db('pizza', array('name', 'value', 'ingredients')); 
+// 'pizza' is a database name 
+// next goes an array with names of columns
+```
+
+Using database functions:
+
+```php
+// $fw->db is an array that stores all added databases
+// every element of this array is an FrameworkDatabase object
+// you can call its functions like:
+$fw->db['dbname']->funcName(args);
+
+// you can print_r($fw->db['dbname']); to see details of FrameworkDatabase object
+```
+
+Database extension functions:
+* `getData`  - used for getting data from database
+```php
+$fw->db['dbname']->getData();           // fetches all elements from a database
+$fw->db['dbname']->getData(null, true); // does same as getData() and returns rows (the result)
+
+$fw->db['dbname']->getData(array('name'=>'Thomas','birthday'=>'09-03-1997')); 
+// fetches all elements with param 'name' equals 'Thomas' and param 'birthday' equals '09-03-1997'
+```
+* `putData`  - puts given row into a database (or pushes at the end)
+```php
+$fw->db['dbname']->putData(DB_PUSH, array('name' => 'Patrick', ... )); // pushes a the end of database a new row
+$fw->db['dbname']->putData(7, array('name' => 'Patrick', ... ));       // puts given row at id 7 of the database
+```
+* `editData` - edits selected row
+```php
+$fw->db['dbname']->editData(4, array('birthday' => '11-02-2002')); // edits 'birthday' value of the #4 row
+```
+* `rmData`   - removes row
+```php
+$fw->db['dbname']->rmData(6); // removes #6 row from the database
 ```
 
 ## Navbar tricks
