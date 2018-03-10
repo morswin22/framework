@@ -1,8 +1,6 @@
 <?php
 
 function is_regex($str) {
-    // $regex = "/^\/[\s\S]+\/$/";
-    // return preg_match($regex, $str);
     return !(@preg_match($str, null) === false);
 }
 
@@ -42,8 +40,6 @@ class Framework {
         $this->db = array();
     }
 
-    // html
-
     function header() {
         echo $this->header;
     }
@@ -57,8 +53,6 @@ class Framework {
     function footer() {
         echo $this->footer;
     }
-
-    // use
 
     function add_db($name, $params, $idp) {
         $this->db[$name] = new FrameworkDatabase($name, $params, $idp);
@@ -121,7 +115,6 @@ class Framework {
     }
 
     function register($data) {
-        // check for every param
         $checksum = true;
         foreach($this->user_params as $param) {
             if (!isset($data[$param])) {
@@ -145,7 +138,6 @@ class Framework {
     }
 
     function login($data) {
-        // check for params (2)
         $checksum = true;
         if (!isset($data[$this->user_idp]))  $checksum = false;
         if (!isset($data[$this->user_chkp])) $checksum = false;
@@ -254,12 +246,10 @@ class Framework {
         return $this->users;
     }
 
-    // set
-
     function prepareUsers($db_params,$id_param,$check_param) {
         $this->user_params = $db_params;
-        $this->user_idp = $id_param;     // idp  => id param
-        $this->user_chkp = $check_param; // chkp => check for login param
+        $this->user_idp = $id_param;
+        $this->user_chkp = $check_param;
         $this->login_cache();
     }
 
@@ -284,8 +274,6 @@ class Framework {
     function setSets($sets) {
         $this->sets = $sets;
     }
-
-    // generic
 
     private function pageName($page) {
         if ($page == "?") {
