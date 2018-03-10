@@ -1,4 +1,4 @@
-<?php include('main.php');$get = $_GET;?><!DOCTYPE html>
+<?php include('main.php');$get = $_GET;include('lib/Parsedown.php');$mdparser =new Parsedown();?><!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -168,6 +168,136 @@
                         }
                         ?></tbody></table><?php
                     }
+                } else {
+                    ?>
+                    <script>$("#panel").css("visibility", "visible");</script>
+                    <div class="row mb-4">
+                        <div class="col">
+                            <h3>How to use</h3>
+                            <p class="lead">A quick quide about using the database GUI</p>
+                        </div>
+                    </div>
+                    <div class="row mb-4">
+                        <div class="col">
+                            <?php
+                            
+echo $mdparser->text('
+#### Adding new databases
+Framework comes with a function called `add_db` which takes three arguments: 
+
+1. database name
+1. columns
+1. id column name
+
+```php
+// code example
+$fw->add_db(\'family\', array(\'id\',\'name\',\'birthday\'), \'id\');
+```
+');
+                            
+                            ?>
+                        </div>
+                    </div>
+                    <div class="row mb-4">
+                        <div class="col">
+                            <?php
+                            
+echo $mdparser->text('
+#### Accessing databases from php
+Your added databases are stored inside of `$fw->db` array. Every database object comes with functions:
+
+* `query` - returns a new query object ([more about that](#db-query))
+* `putData` - takes as an argument id and values (all columns must be filled except for id)
+* `rmData` - takes as an argument id to delete
+* `editData` - takes as an argument id and values to change
+
+```php
+// code example
+
+// pass empty string as id to push new row at the back
+$fw->db[\'family\']->putData(\'\', array(\'name\'=>\'Ana\', \'birthday\'=>\'11.02.1985\'));
+// you can pass DB_PUSH constant instead of the empty string
+
+// simply removes row from database
+$fw->db[\'family\']->rmData(5);
+
+// first argument is an id and the second is an array with values to change
+$fw->db[\'family\']->editData(2, array(\'birthday\'=>\'19.10.1983\'));
+
+```
+');
+                            
+                            ?>
+                        </div>
+                    </div>
+                    <div class="row mb-4">
+                        <div class="col"><a name="db-query"></a>
+                            <?php
+                            
+echo $mdparser->text('
+#### Database query object
+When function `query` is fired, it returns new query object which has got some functions:
+
+* `getData` - gets data from database 
+* `fetch` - returns following rows or `false` when there is nothing to return
+* `putData` - takes as an argument id and values (all columns must be filled except for id)
+* `rmData` - takes as an argument id to delete
+* `editData` - takes as an argument id and values to change
+
+```php
+// code example
+
+// fetches for every row in the database
+$query = $fw->db[\'family\']->query();
+
+// fetches for specific rows in the database
+$query = $fw->db[\'family\']->query(array(\'name\'=>\'Patrick\')); 
+
+// you can pass a regular expression
+$query = $fw->db[\'family\']->query(array(\'name\'=>\'/patrick/i\')); 
+
+// use fetch in if and while
+if ($row = $query->fetch()) {
+    echo \'Patrick\'s birthday is on \' . $row[\'birthday\'];
+}
+
+// functions like putData, rmData, editData work same as on database object 
+```
+');
+                            
+                            ?>
+                        </div>
+                    </div>
+                    <div class="row mb-4">
+                        <div class="col">
+                            <?php
+                            
+echo $mdparser->text('
+#### Accessing databases from the GUI
+Your added databases are listed at the left side of screen. After selecting a database you will see a table where the columns and rows are displayed. Above that there is an input textarea and operation selector. You can select one out of four functions:
+
+* Get data
+* Put data
+* Remove data
+* Edit data
+
+You write queries in json format. You have to pass the same arguments as you would pass in php. Store the arguments in a json array in the correct order.
+
+Example: (edit data operation is selected)
+```
+[
+    3,
+    {
+        "name": "Martha"
+    }
+]
+```
+');
+                            
+                            ?>
+                        </div>
+                    </div>
+                    <?php
                 }
                 
                 ?>
