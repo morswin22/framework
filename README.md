@@ -131,7 +131,7 @@ $fw->add_db(\'family\', array(\'id\',\'name\',\'birthday\'), \'id\');
 #### Accessing databases from php
 Your added databases are stored inside of `$fw->db` array. Every database object comes with functions:
 
-* `query` - returns a new query object ([more about that](#db-query))
+* `query` - returns a new query object ([more about that](#database-query-object))
 * `putData` - takes as an argument id and values (all columns must be filled except for id)
 * `rmData` - takes as an argument id to delete
 * `editData` - takes as an argument id and values to change
