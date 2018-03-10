@@ -54,8 +54,8 @@ class Framework {
 
     // use
 
-    function add_db($name, $params) {
-        $this->db[$name] = new FrameworkDatabase($name, $params);
+    function add_db($name, $params, $idp) {
+        $this->db[$name] = new FrameworkDatabase($name, $params, $idp);
     }
 
     function set($set) {
@@ -303,11 +303,12 @@ define('DB_PUSH', '');
 
 class FrameworkDatabase {
 
-    public function __construct($dbname, $cols) {
+    public function __construct($dbname, $cols, $idp) {
 
         $this->name = $dbname;
         $this->file = __DIR__.'/database/'.$dbname.'.json';
-        $this->lastquery = '';
+
+        $this->idp = $idp;
 
         if (!is_file($this->file)) {
             file_put_contents($this->file,'[]');
@@ -317,7 +318,105 @@ class FrameworkDatabase {
 
     }
 
-    function getData($p = array(), $return = false) {
+    function query($p = array(), $return = false) {
+        return new FrameworkDatabaseQuery($this->file, $this->cols, $this->idp, $p);
+    }
+
+    function putData($id, $values) {
+        foreach ($this->cols as $col) {
+            if ($col == $this->idp) continue;
+            if (!isset($values[$col])) {
+                $this->error(500, 'Bad values structure while putting into datebase -> '.$this->name);
+            }
+        }
+        $rows = json_decode(file_get_contents($this->file),true);
+        if ($id === DB_PUSH) {
+            $id = count($rows);
+            $values[$this->idp] = $id;
+            $rows[$id] = $this->convertRaw($values);
+        } else {
+            if (isset($rows[$id])) {
+                $values[$this->idp] = $id;
+                $rows[$id] = $this->convertRaw($values);
+            }
+        }
+        file_put_contents($this->file,json_encode($rows));
+    }
+
+    function editData($id, $p) {
+        foreach ($p as $param=>$value) {
+            if (!in_array($param,$this->cols)) {
+                $this->error(500, 'Bad values structure while editing datebase -> '.$this->name);
+            }
+        }
+        $rows = json_decode(file_get_contents($this->file),true);
+        if (isset($rows[$id])) {
+            $row = $this->convert($rows[$id]);
+            foreach($p as $param=>$value){
+                $row[$param] = $value;
+            }
+            $rows[$id] = $this->convertRaw($row);
+            file_put_contents($this->file,json_encode($rows));
+        }
+    }
+
+    function rmData($id) {
+        $rows = json_decode(file_get_contents($this->file),true);
+        if (isset($rows[$id])) {
+            array_splice($rows,$id,1);
+            foreach($rows as $k => $row) {
+                $row = $this->convert($row);
+                $row[$this->idp] = $k;
+                $rows[$k] = $this->convertRaw($row);
+            }
+            file_put_contents($this->file,json_encode($rows));
+        }
+    }
+
+    private function setCols($cols) {
+        $this->cols = $cols;
+    }
+
+    function convert($data_raw) {
+        $data = array();
+        foreach($this->cols as $key => $col) {
+            $data[$col] = $data_raw[$key];
+        }
+        return $data;
+    }
+
+    function convertRaw($data) {
+        $data_raw = array();
+        foreach($this->cols as $key => $col) {
+            $data_raw[$key] = $data[$col];
+        }
+        return $data_raw;
+    }
+
+    private function error($code =500, $msg='Undefined error') {
+        http_response_code($code);
+        die('<pre><strong>Database Error:</strong> '.$msg.'<hr></pre>');
+    }
+
+}
+
+class FrameworkDatabaseQuery {
+
+    public function __construct($file, $cols, $idp, $p) {
+
+        $this->file = $file;
+        $this->lastquery = '';
+
+        $this->setCols($cols);
+        $this->idp = $idp;
+
+        $this->getData($p);
+
+        $this->fetchCurrent = 0;
+
+    }
+
+    function getData($p = array()) {
         $this->lastquery = $p;
         $this->rows = json_decode(file_get_contents($this->file),true);
         if (is_array($p)) {
@@ -332,7 +431,7 @@ class FrameworkDatabase {
                     }
                 }
                 if ($check == $checksum) {
-                    $new_rows[$n] = $this->rows[$n];
+                    $new_rows[] = $this->rows[$n];
                 }
             }
             $this->rows = $new_rows;
@@ -341,23 +440,34 @@ class FrameworkDatabase {
         foreach($this->rows as $k=>$row) {
             $this->rows[$k] = $this->convert($row);
         }
+    }
 
-        if ($return == true) {
-            return $this->$rows;
+    function fetch() {
+        if (isset($this->rows[$this->fetchCurrent])) {
+            $this->fetchCurrent++;
+            return $this->rows[$this->fetchCurrent-1];
+        } else {
+            return false;
         }
     }
 
     function putData($id, $values) {
         foreach ($this->cols as $col) {
+            if ($col == $this->idp) continue;
             if (!isset($values[$col])) {
                 $this->error(500, 'Bad values structure while putting into datebase -> '.$this->name);
             }
         }
         $rows = json_decode(file_get_contents($this->file),true);
         if ($id === DB_PUSH) {
-            $rows[] = $this->convertRaw($values);
-        } else {
+            $id = count($rows);
+            $values[$this->idp] = $id;
             $rows[$id] = $this->convertRaw($values);
+        } else {
+            if (isset($rows[$id])) {
+                $values[$this->idp] = $id;
+                $rows[$id] = $this->convertRaw($values);
+            }
         }
         file_put_contents($this->file,json_encode($rows));
         $this->getData($this->lastquery);
@@ -384,9 +494,15 @@ class FrameworkDatabase {
     function rmData($id) {
         $rows = json_decode(file_get_contents($this->file),true);
         if (isset($rows[$id])) {
-            unset($rows[$id]);
+            array_splice($rows,$id,1);
+            foreach($rows as $k => $row) {
+                $row = $this->convert($row);
+                $row[$this->idp] = $k;
+                $rows[$k] = $this->convertRaw($row);
+            }
             file_put_contents($this->file,json_encode($rows));
             $this->getData($this->lastquery);
+            $this->fetchCurrent--;
         }
     }
 
