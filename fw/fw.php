@@ -1,5 +1,11 @@
 <?php
 
+function is_regex($str) {
+    // $regex = "/^\/[\s\S]+\/$/";
+    // return preg_match($regex, $str);
+    return !(@preg_match($str, null) === false);
+}
+
 class Framework {
 
     public function __construct($domainURL) {
@@ -426,8 +432,14 @@ class FrameworkDatabaseQuery {
                 $row = $this->convert($row);
                 $check = 0;
                 foreach($p as $param => $value) {
-                    if ($row[$param] == $value) {
-                        $check++;
+                    if (is_regex($value)) {
+                        if (@preg_match($value, $row[$param])) {
+                            $check++;
+                        }
+                    } else {
+                        if ($row[$param] == $value) {
+                            $check++;
+                        }
                     }
                 }
                 if ($check == $checksum) {
