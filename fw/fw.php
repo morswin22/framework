@@ -329,7 +329,7 @@ class FrameworkDatabase {
             $values[$this->idp] = $id;
             $rows[$id] = $this->convertRaw($values);
         } else {
-            if (isset($rows[$id])) {
+            if (isset($rows[$id]) or $rows[$id] === null) {
                 $values[$this->idp] = $id;
                 $rows[$id] = $this->convertRaw($values);
             }
@@ -344,7 +344,7 @@ class FrameworkDatabase {
             }
         }
         $rows = json_decode(file_get_contents($this->file),true);
-        if (isset($rows[$id])) {
+        if (isset($rows[$id]) and $rows[$id] !== null) {
             $row = $this->convert($rows[$id]);
             foreach($p as $param=>$value){
                 $row[$param] = $value;
@@ -357,12 +357,7 @@ class FrameworkDatabase {
     function rmData($id) {
         $rows = json_decode(file_get_contents($this->file),true);
         if (isset($rows[$id])) {
-            array_splice($rows,$id,1);
-            foreach($rows as $k => $row) {
-                $row = $this->convert($row);
-                $row[$this->idp] = $k;
-                $rows[$k] = $this->convertRaw($row);
-            }
+            $rows[$id] = null;
             file_put_contents($this->file,json_encode($rows));
         }
     }
@@ -417,6 +412,7 @@ class FrameworkDatabaseQuery {
             $checksum = count($p);
             $new_rows = array();
             foreach($this->rows as $n => $row) {
+                if ($row === null) continue;
                 $row = $this->convert($row);
                 $check = 0;
                 foreach($p as $param => $value) {
@@ -432,23 +428,29 @@ class FrameworkDatabaseQuery {
                 }
                 if ($check == $checksum) {
                     $new_rows[] = $this->rows[$n];
-                }
+                } 
             }
             $this->rows = $new_rows;
         }
         $this->crows = count($this->rows);
+        $n_rows = array();
         foreach($this->rows as $k=>$row) {
-            $this->rows[$k] = $this->convert($row);
+            $krow = $this->convert($row);
+            if ($row !== null) {
+                $n_rows[] = $krow;
+            }
         }
+        $this->rows = $n_rows;
     }
 
     function fetch() {
-        if (isset($this->rows[$this->fetchCurrent])) {
+        while (isset($this->rows[$this->fetchCurrent])) {
             $this->fetchCurrent++;
-            return $this->rows[$this->fetchCurrent-1];
-        } else {
-            return false;
+            if ($this->rows[$this->fetchCurrent-1] !== null) {
+                return $this->rows[$this->fetchCurrent-1];
+            }
         }
+        return false;
     }
 
     function putData($id, $values) {
@@ -464,7 +466,7 @@ class FrameworkDatabaseQuery {
             $values[$this->idp] = $id;
             $rows[$id] = $this->convertRaw($values);
         } else {
-            if (isset($rows[$id])) {
+            if (isset($rows[$id]) or $rows[$id] === null) {
                 $values[$this->idp] = $id;
                 $rows[$id] = $this->convertRaw($values);
             }
@@ -480,7 +482,7 @@ class FrameworkDatabaseQuery {
             }
         }
         $rows = json_decode(file_get_contents($this->file),true);
-        if (isset($rows[$id])) {
+        if (isset($rows[$id]) and $rows[$id] !== null) {
             $row = $this->convert($rows[$id]);
             foreach($p as $param=>$value){
                 $row[$param] = $value;
@@ -494,12 +496,13 @@ class FrameworkDatabaseQuery {
     function rmData($id) {
         $rows = json_decode(file_get_contents($this->file),true);
         if (isset($rows[$id])) {
-            array_splice($rows,$id,1);
-            foreach($rows as $k => $row) {
-                $row = $this->convert($row);
-                $row[$this->idp] = $k;
-                $rows[$k] = $this->convertRaw($row);
-            }
+            // array_splice($rows,$id,1);
+            // foreach($rows as $k => $row) {
+            //     $row = $this->convert($row);
+            //     $row[$this->idp] = $k;
+            //     $rows[$k] = $this->convertRaw($row);
+            // }
+            $rows[$id] = null;
             file_put_contents($this->file,json_encode($rows));
             $this->getData($this->lastquery);
             $this->fetchCurrent--;
