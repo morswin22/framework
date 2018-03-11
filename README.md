@@ -125,7 +125,7 @@ Framework comes with a function called `add_db` which takes three arguments:
 
 ```php
 // code example
-$fw->add_db(\'family\', array(\'id\',\'name\',\'birthday\'), \'id\');
+$fw->add_db('family', array('id','name','birthday'), \'id\');
 ```
 
 #### Accessing databases from php
@@ -140,14 +140,14 @@ Your added databases are stored inside of `$fw->db` array. Every database object
 // code example
 
 // pass empty string as id to push new row at the back
-$fw->db[\'family\']->putData(\'\', array(\'name\'=>\'Ana\', \'birthday\'=>\'11.02.1985\'));
+$fw->db['family']->putData('', array('name'=>'Ana', 'birthday'=>'11.02.1985'));
 // you can pass DB_PUSH constant instead of the empty string
 
 // simply removes row from database
-$fw->db[\'family\']->rmData(5);
+$fw->db['family']->rmData(5);
 
 // first argument is an id and the second is an array with values to change
-$fw->db[\'family\']->editData(2, array(\'birthday\'=>\'19.10.1983\'));
+$fw->db['family']->editData(2, array('birthday'=>'19.10.1983'));
 
 ```
 
@@ -164,17 +164,17 @@ When function `query` is fired, it returns new query object which has got some f
 // code example
 
 // fetches for every row in the database
-$query = $fw->db[\'family\']->query();
+$query = $fw->db['family']->query();
 
 // fetches for specific rows in the database
-$query = $fw->db[\'family\']->query(array(\'name\'=>\'Patrick\')); 
+$query = $fw->db['family']->query(array('name'=>'Patrick')); 
 
 // you can pass a regular expression
-$query = $fw->db[\'family\']->query(array(\'name\'=>\'/patrick/i\')); 
+$query = $fw->db['family']->query(array('name'=>'/patrick/i')); 
 
 // use fetch in if and while
 if ($row = $query->fetch()) {
-    echo \'Patrick\'s birthday is on \' . $row[\'birthday\'];
+    echo 'Patrick's birthday is on ' . $row['birthday'];
 }
 
 // functions like putData, rmData, editData work same as on database object 
