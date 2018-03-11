@@ -1,4 +1,4 @@
-<?php include('main.php');$get = $_GET;include('lib/Parsedown.php');$mdparser =new Parsedown(); if (isset($_POST['name'], $_POST['pass'])) {$fw->db_login($_POST['name'], $_POST['pass']);} if (isset($_SESSION['fw-db-user'])) {$d=$_SESSION['fw-db-user']; $fw->db_login($d['name'],$d['pass']);}?><!DOCTYPE html>
+<?php include('main.php');$get = $_GET;include('lib/Parsedown.php');$mdparser =new Parsedown(); if (isset($_POST['name'], $_POST['pass'])) {$fw->db_login($_POST['name'], $_POST['pass']);} if (isset($_SESSION['fw-db-user'])) {$d=$_SESSION['fw-db-user']; $fw->db_login($d['name'],$d['pass']);} if (isset($get["logout"])) {$fw->db_logout(); header('Location: ./db.php'); exit();} ?><!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -32,6 +32,19 @@
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container">    
             <a class="navbar-brand" href="./db.php">Database Access</a>
+            <?php if ($fw->db_access == true) { ?>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbar">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="./db.php?logout">Logout</a>
+                    </li>
+                </ul>
+            </div>
+            <?php } ?>
         </div>
     </nav>
 

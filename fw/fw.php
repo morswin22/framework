@@ -53,6 +53,12 @@ class Framework {
             }
         }
     }
+    function db_logout() {
+        if (isset($_SESSION['fw-db-user'])) {
+            unset($_SESSION['fw-db-user']);
+        }
+        $this->db_access = false;
+    }
 
     function header() {
         echo $this->header;
