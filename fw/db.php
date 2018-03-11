@@ -13,6 +13,19 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.35.0/codemirror.min.js"></script>
 
+    <style>
+        .sort-control > .sort-icon {
+            visibility: hidden;
+        }
+        .sort-control > .sort-icon > img {
+            width: 20px;
+            height: 20px;
+        }
+        .sort-control:hover > .sort-icon {
+            visibility: visible;
+        }
+    </style>
+
 </head>
 <body>
     
@@ -103,7 +116,9 @@
                         ?>
                         <table class="table table-bordered table-hover table-striped"><thead><?php
                         foreach($fw->db[$dbname]->cols as $col) {
-                            ?><th><?=$col?></th><?php
+                            ?><th class="sort-control"><a href="?dbname=<?=$dbname?>&query=<?=urlencode($q)?>&sort=<?=$col?>,asc" class="sort-icon"><img src="lib/img/sort_up.png"></a>
+                                <?=$col?>
+                                <a href="?dbname=<?=$dbname?>&query=<?=urlencode($q)?>&sort=<?=$col?>,desc" class="sort-icon"><img src="lib/img/sort_down.png"></a></th><?php
                         }
                         ?></thead><?php
 
@@ -158,8 +173,15 @@
                             print($e->getMessage());
                         }
 
-
                         $query = $fw->db[$dbname]->query($q);
+
+                        if (isset($get['sort'])) {
+                            $sortData = explode(',',$get['sort']);
+                            if (count($sortData) == 2) {
+                                 $query->sort($sortData[0], $sortData[1]);
+                            }
+                        }
+
                         ?><tbody><?php
                         while($row = $query->fetch()) {
                             ?><tr><?php

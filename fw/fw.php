@@ -443,6 +443,25 @@ class FrameworkDatabaseQuery {
         $this->rows = $n_rows;
     }
 
+    function sort($param, $flag = 'asc') {
+
+        $col = array();
+        foreach ($this->rows as $row) {
+            $col[] = $row[$param];
+        }
+        natsort($col);
+
+        $rows = array();
+        foreach($col as $k=>$v) {
+            $rows[] = $this->rows[$k];
+        }
+
+        $this->rows = $rows;
+        if ($flag == 'desc') {
+            $this->rows = array_reverse($rows);
+        }
+    }
+
     function fetch() {
         while (isset($this->rows[$this->fetchCurrent])) {
             $this->fetchCurrent++;
