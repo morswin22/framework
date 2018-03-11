@@ -1,4 +1,4 @@
-<?php include('main.php');$get = $_GET;include('lib/Parsedown.php');$mdparser =new Parsedown();?><!DOCTYPE html>
+<?php include('main.php');$get = $_GET;include('lib/Parsedown.php');$mdparser =new Parsedown(); if (isset($_POST['name'], $_POST['pass'])) {$fw->db_login($_POST['name'], $_POST['pass']);} if (isset($_SESSION['fw-db-user'])) {$d=$_SESSION['fw-db-user']; $fw->db_login($d['name'],$d['pass']);}?><!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -36,6 +36,10 @@
     </nav>
 
     <div class="container">
+
+        <?php
+        if ($fw->db_access == true) {
+        ?>
 
         <div class="row my-4">
 
@@ -328,6 +332,41 @@ Example: (edit data operation is selected)
             </div>
             
         </div>
+
+        <?php
+        } else {
+
+        ?>
+
+        <div class="row my-4">
+            <div class="col-sm-12 col-md-2"></div>
+            <div class="col-sm-12 col-md-8">
+                <div class="alert alert-danger mb-3" role="alert">
+                    <b>This is a resticted area!</b> You have to be logged in as an administrator of this network
+                </div>
+            </div>
+        </div>
+
+        <div class="row my-4">
+            <div class="col-sm-12 col-md-3"></div>
+            <div class="col-sm-12 col-md-6">
+                <form method="post">
+                    <div class="form-group">
+                        <label>Name</label>
+                        <input type="text" class="form-control" name="name" placeholder="Enter name">
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" class="form-control" name="pass" placeholder="Password">
+                    </div>
+                    <button type="submit" class="btn btn-outline-primary w-100 mt-2">Submit</button>
+                </form>
+            </div>
+        </div>
+
+        <?php
+        }
+        ?>
 
     </div>
 

@@ -38,6 +38,20 @@ class Framework {
         $this->setScripts(array());
 
         $this->db = array();
+        $this->db_access = false;
+        $this->db_users = array();
+    }
+
+    function db_register($name, $pass) {
+        $this->db_users[$name] = $pass;
+    }
+    function db_login($name, $pass) {
+        if (isset($this->db_users[$name])) {
+            if ($this->db_users[$name] === $pass) {
+                $this->db_access = true;
+                $_SESSION['fw-db-user'] = array('name'=>$name, 'pass'=>$pass);
+            }
+        }
     }
 
     function header() {
