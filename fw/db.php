@@ -35,16 +35,18 @@
                         } else {
                             $current = '';
                         }
-                        foreach($fw->db as $db) {
-                            if ($db->name == $current) {
-                                $rep = 'active';
-                            } else {
-                                $rep = '';
+                        if (isset($fw)) {
+                            foreach($fw->db as $db) {
+                                if ($db->name == $current) {
+                                    $rep = 'active';
+                                } else {
+                                    $rep = '';
+                                }
+                                $str = '<a href="./db.php?dbname={{DB_NAME}}" class="list-group-item list-group-item-action {{is:active}}">{{DB_NAME}}</a>';
+                                $str = str_replace('{{DB_NAME}}',$db->name,$str);
+                                $str = str_replace('{{is:active}}',$rep,$str);
+                                echo $str;
                             }
-                            $str = '<a href="./db.php?dbname={{DB_NAME}}" class="list-group-item list-group-item-action {{is:active}}">{{DB_NAME}}</a>';
-                            $str = str_replace('{{DB_NAME}}',$db->name,$str);
-                            $str = str_replace('{{is:active}}',$rep,$str);
-                            echo $str;
                         }
                     ?>
                 </ul>
