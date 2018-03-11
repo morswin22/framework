@@ -496,12 +496,6 @@ class FrameworkDatabaseQuery {
     function rmData($id) {
         $rows = json_decode(file_get_contents($this->file),true);
         if (isset($rows[$id])) {
-            // array_splice($rows,$id,1);
-            // foreach($rows as $k => $row) {
-            //     $row = $this->convert($row);
-            //     $row[$this->idp] = $k;
-            //     $rows[$k] = $this->convertRaw($row);
-            // }
             $rows[$id] = null;
             file_put_contents($this->file,json_encode($rows));
             $this->getData($this->lastquery);
