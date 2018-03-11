@@ -329,7 +329,7 @@ class FrameworkDatabase {
             $values[$this->idp] = $id;
             $rows[$id] = $this->convertRaw($values);
         } else {
-            if (isset($rows[$id]) or $rows[$id] === null) {
+            if (isset($rows[$id]) or ($id < count($rows))) {
                 $values[$this->idp] = $id;
                 $rows[$id] = $this->convertRaw($values);
             }
@@ -466,7 +466,7 @@ class FrameworkDatabaseQuery {
             $values[$this->idp] = $id;
             $rows[$id] = $this->convertRaw($values);
         } else {
-            if (isset($rows[$id]) or $rows[$id] === null) {
+            if (isset($rows[$id]) or ($id < count($rows))) {
                 $values[$this->idp] = $id;
                 $rows[$id] = $this->convertRaw($values);
             }
