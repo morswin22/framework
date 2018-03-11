@@ -125,7 +125,7 @@ Framework comes with a function called `add_db` which takes three arguments:
 
 ```php
 // code example
-$fw->add_db('family', array('id','name','birthday'), \'id\');
+$fw->add_db('family', array('id','name','birthday'), 'id');
 ```
 
 #### Accessing databases from php
