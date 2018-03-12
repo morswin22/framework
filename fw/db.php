@@ -1,4 +1,100 @@
-<?php include('main.php');$get = $_GET;include('lib/Parsedown.php');$mdparser =new Parsedown(); if (isset($_POST['name'], $_POST['pass'])) {$fw->db_login($_POST['name'], $_POST['pass']);} if (isset($_SESSION['fw-db-user'])) {$d=$_SESSION['fw-db-user']; $fw->db_login($d['name'],$d['pass']);} if (isset($get["logout"])) {$fw->db_logout(); header('Location: ./db.php'); exit();} ?><!DOCTYPE html>
+<?php include('main.php');$get = $_GET;include('lib/Parsedown.php');$mdparser =new Parsedown(); if (isset($_POST['fw-db-name'], $_POST['fw-db-pass'])) {$fw->db_login($_POST['fw-db-name'], $_POST['fw-db-pass']);header('Location: ./db.php'); exit();} if (isset($_SESSION['fw-db-user'])) {$d=$_SESSION['fw-db-user']; $fw->db_login($d['name'],$d['pass']);} if (isset($get["logout"])) {$fw->db_logout(); header('Location: ./db.php'); exit();} ?><!DOCTYPE html>
+<?php
+
+if (isset($_POST['dbname'], $_POST['query'], $_POST['operation'])) {
+
+    $dbname = $_POST['dbname'];
+
+    if (isset($fw->db[$dbname])) {
+
+        $q = json_decode(urldecode($_POST['query']), true);
+        try {
+            switch($_POST['operation']) {
+                case "getdata":
+                if (is_array($q)) {
+                    if (isset($q[0]) and is_array($q[0])) {
+                        $q = $q[0];
+                    }
+                }
+                break;
+                case "putdata":
+                if (is_array($q)) {
+                    if (count($q) == 2 and is_array($q[1])) {
+                        $fw->db[$dbname]->putData($q[0], $q[1]);
+                    } else {
+                        throw new Exception('query syntax error');
+                    }
+                } else {
+                    throw new Exception('query syntax error');
+                }
+                $q = '';
+                break;
+                case "rmdata":
+                if (is_array($q)) {
+                    if (isset($q[0]) and !is_array($q[0])) {
+                        $fw->db[$dbname]->rmData($q[0]);
+                    } else {
+                        throw new Exception('query syntax error');
+                    }
+                } else {
+                    throw new Exception('query syntax error');
+                }
+                $q = '';
+                break;
+                case "editdata":
+                if (is_array($q)) {
+                    if (count($q) == 2 and is_array($q[1])) {
+                        $fw->db[$dbname]->editData($q[0], $q[1]);
+                    } else {
+                        throw new Exception('query syntax error');
+                    }
+                } else {
+                    throw new Exception('query syntax error');
+                }
+                $q = '';
+                break;
+            }
+
+            header('Location: ./db.php?dbname='.$dbname.'&operation='.$_POST['operation'].'&query='.urlencode($_POST['query']));
+            exit();
+
+        } catch (Exception $e) {
+            die($e->getMessage());
+        }
+
+    }
+
+}
+
+if (isset($_POST['users'], $_POST['operation'])) {
+
+    if (isset($_POST[$fw->user_idp])) {
+    
+        $user = array();
+        $user[$fw->user_idp] = $_POST[$fw->user_idp];
+        unset($_POST[$fw->user_idp]);
+        foreach($fw->user_params as $col) {
+            if (isset($_POST[$col])) {
+                $v = $_POST[$col];
+                if ($v == 'true') { $v = true; }
+                else if ($v == 'false') { $v = false; }
+                $fw->edit_user($user, $col, $v);
+            }
+        }
+
+    }
+
+    header('Location: ./db.php?users');
+    exit();
+}
+
+if (isset($_GET['users'], $_GET['delete'])) {
+    $fw->rm_user($_GET['delete']);
+    header('Location: ./db.php?users');
+    exit();
+}
+
+?>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -57,8 +153,18 @@
         <div class="row my-4">
 
             <div class="col-sm-12 col-md-3">
-                <ul class="list-group">
-                    <li class="list-group-item list-group-item-secondary">Loaded databases</li>
+                <div class="row">
+                    <div class="col">
+                        <ul class="list-group mb-3">
+                            <li class="list-group-item list-group-item-secondary">Users database</li>
+                            <a href="./db.php?users" class="list-group-item list-group-item-action <?php if(isset($_GET['users'])) {echo "active";} ?>">Framework users</a>
+                        </ul>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <ul class="list-group mb-3">
+                            <li class="list-group-item list-group-item-secondary">Loaded databases</li>
                     <?php
                         if (isset($get['dbname'])) {
                             $current = $get['dbname'];
@@ -79,7 +185,9 @@
                             }
                         }
                     ?>
-                </ul>
+                        </ul>
+                    </div>
+                </div>
             </div>
 
             <div class="col-sm-12 col-md-9" id="panel" style="visibility: hidden;">
@@ -109,7 +217,7 @@
                         ?>
                         
                         <div class="input-group mb-2">
-                            <form class="w-100">
+                            <form class="w-100" method="post">
                                 <input type="text" value="<?=$dbname?>" name="dbname" hidden="hidden">
                                 <div class="input-group mb-3">
                                     <div class="input-group-prepend">
@@ -140,54 +248,13 @@
                         ?></thead><?php
 
                         $q = json_decode(urldecode($q), true);
-                        try {
-                            switch($op) {
-                                case "getdata":
-                                    if (is_array($q)) {
-                                        if (isset($q[0]) and is_array($q[0])) {
-                                            $q = $q[0];
-                                        }
-                                    }
-                                    break;
-                                case "putdata":
-                                    if (is_array($q)) {
-                                        if (count($q) == 2 and is_array($q[1])) {
-                                            $fw->db[$dbname]->putData($q[0], $q[1]);
-                                        } else {
-                                            throw new Exception('query syntax error');
-                                        }
-                                    } else {
-                                        throw new Exception('query syntax error');
-                                    }
-                                    $q = '';
-                                    break;
-                                case "rmdata":
-                                    if (is_array($q)) {
-                                        if (isset($q[0]) and !is_array($q[0])) {
-                                            $fw->db[$dbname]->rmData($q[0]);
-                                        } else {
-                                            throw new Exception('query syntax error');
-                                        }
-                                    } else {
-                                        throw new Exception('query syntax error');
-                                    }
-                                    $q = '';
-                                    break;
-                                case "editdata":
-                                    if (is_array($q)) {
-                                        if (count($q) == 2 and is_array($q[1])) {
-                                            $fw->db[$dbname]->editData($q[0], $q[1]);
-                                        } else {
-                                            throw new Exception('query syntax error');
-                                        }
-                                    } else {
-                                        throw new Exception('query syntax error');
-                                    }
-                                    $q = '';
-                                    break;
+
+                        if ($op !== 'getdata') {
+                            $q = '';
+                        } else {
+                            if (isset($q[0]) and is_array($q[0])) {
+                                $q = $q[0];
                             }
-                        } catch (Exception $e) {
-                            print($e->getMessage());
                         }
 
                         $query = $fw->db[$dbname]->query($q);
@@ -209,13 +276,44 @@
                         }
                         ?></tbody></table><?php
                     }
+                } else if (isset($get['users'])) {
+
+                    ?>
+                    <table class="table table-bordered table-hover table-striped"><thead><th></th><?php
+                    foreach($fw->user_params as $col) {
+                        ?><th><?=$col?></th><?php
+                    }
+                    ?><th></th></thead><tbody><?php
+                    $users = $fw->getUsers();
+                    foreach($users as $user) {
+                        ?><tr><form method="post">
+                        <td><a href="./db.php?users&delete=<?=$user[$fw->user_idp]?>"><img src="./lib/img/btn_delete.png" style="width: 23px; height: 23px; margin-top: 8.5px;"></a></td>
+                        <?php
+                        foreach($user as $col => $value) {
+                            $v = $value;
+                            $e = '';
+                            $input = '';
+                            $name = 'name="'.$col.'"';
+                            $inputH = '';
+                            if (is_bool($value)) { if($value === true) {$v="true";} else {$v="false";} $e = 'style="color: #e83e8c; word-break: break-word; font-family: SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;"'; }
+                            if ($col == $fw->user_idp) { $input = 'disabled="disabled"'; $name = ''; $inputH = '<input hidden="hidden" name="'.$col.'" value="'.$v.'">'; }
+                            ?><td><?=$inputH?><input class="form-control" type="text" <?=$name?> value="<?=$v?>" placeholder="<?=$col?>" <?=$e?> <?=$input?> /></td><?php
+                        }
+                        ?><td><input hidden="hidden" name="operation" value="edit" ><input hidden="hidden" name="users" >
+                        <button type="submit" style="width: 23px; height: 23px; margin-top: 8.5px; background: url('lib/img/btn_edit.png') no-repeat; background-size: cover; border: 0; cursor:pointer;"></button></td>
+                        </form></tr><?php
+                    }
+                    ?></tbody></table>
+                    <script>$("#panel").css("visibility", "visible");</script><?php
+
+
                 } else {
                     ?>
                     <script>$("#panel").css("visibility", "visible");</script>
                     <div class="row mb-4">
                         <div class="col">
                             <h3>How to use</h3>
-                            <p class="lead">A quick quide about using the database GUI</p>
+                            <p class="lead">A quick guide about using the database GUI</p>
                         </div>
                     </div>
                     <div class="row mb-4">
@@ -366,11 +464,11 @@ Example: (edit data operation is selected)
                 <form method="post">
                     <div class="form-group">
                         <label>Name</label>
-                        <input type="text" class="form-control" name="name" placeholder="Enter name">
+                        <input type="text" class="form-control" name="fw-db-name" placeholder="Enter name">
                     </div>
                     <div class="form-group">
                         <label>Password</label>
-                        <input type="password" class="form-control" name="pass" placeholder="Password">
+                        <input type="password" class="form-control" name="fw-db-pass" placeholder="Password">
                     </div>
                     <button type="submit" class="btn btn-outline-primary w-100 mt-2">Submit</button>
                 </form>

@@ -240,6 +240,12 @@ class Framework {
         }
     }
 
+    function rm_user($id) {
+        if (is_file(__DIR__.'/users/'.$id.'.json')) {
+            unlink(__DIR__.'/users/'.$id.'.json');
+        }
+    }
+
     private function userConvert($user_raw) {
         $user = array();
         foreach($this->user_params as $key => $param) {
@@ -340,7 +346,7 @@ class FrameworkDatabase {
         foreach ($this->cols as $col) {
             if ($col == $this->idp) continue;
             if (!isset($values[$col])) {
-                $this->error(500, 'Bad values structure while putting into datebase -> '.$this->name);
+                $values[$col] = "";
             }
         }
         $rows = json_decode(file_get_contents($this->file),true);
