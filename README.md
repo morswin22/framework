@@ -115,6 +115,8 @@ $fw->edit('pass','1234'); // changes pass value in currently logged user
 $fw->edit_user($user_object,'pass','1234'); // changes pass value in given user
 ```
 
+User data is stored in `$fw->user` variable.
+
 ## Database extension
 #### Adding new databases
 Framework comes with a function called `add_db` which takes three arguments: 
@@ -156,6 +158,7 @@ When function `query` is fired, it returns new query object which has got some f
 
 * `getData` - gets data from database 
 * `fetch` - returns following rows or `false` when there is nothing to return
+* `sort` - sorts rows in ascending or descending order 
 * `putData` - takes as an argument id and values (all columns must be filled except for id)
 * `rmData` - takes as an argument id to delete
 * `editData` - takes as an argument id and values to change
@@ -165,6 +168,9 @@ When function `query` is fired, it returns new query object which has got some f
 
 // fetches for every row in the database
 $query = $fw->db['family']->query();
+// sort the result alphabetically using the 'name' column
+$query->sort('name', 'asc');
+// sort accepts 'asc' for ascending or 'desc' for descending order
 
 // fetches for specific rows in the database
 $query = $fw->db['family']->query(array('name'=>'Patrick')); 
@@ -178,6 +184,28 @@ if ($row = $query->fetch()) {
 }
 
 // functions like putData, rmData, editData work same as on database object 
+```
+
+#### Accessing databases from the GUI
+Get access to `fw/db.php` by adding to `fw/main.php` new database user: `db_register()`. This function accepts name and password for the new user.
+
+Your added databases are listed at the left side of screen. After selecting a database you will see a table where the columns and rows are displayed. Above that there is an input textarea and operation selector. You can select one out of four functions:
+
+* Get data
+* Put data
+* Remove data
+* Edit data
+
+You write queries in json format. You have to pass the same arguments as you would pass in php. Store the arguments in a json array in the correct order.
+
+Example: (edit data operation is selected)
+```
+[
+    3,
+    {
+        "name": "Martha"
+    }
+]
 ```
 
 ## Navbar tricks
