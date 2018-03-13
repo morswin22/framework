@@ -115,6 +115,8 @@ $fw->edit('pass','1234'); // changes pass value in currently logged user
 $fw->edit_user($user_object,'pass','1234'); // changes pass value in given user
 ```
 
+User data is stored in `$fw->user` variable.
+
 ## Database extension
 #### Adding new databases
 Framework comes with a function called `add_db` which takes three arguments: 
