@@ -6,84 +6,43 @@ Create new project with framework:
 
     git clone https://github.com/morswin22/framework.git your_project_dir
 
-Configurate `fw/main.php`:
+Initialize Framework class and add your compontents in `fw/main.php`:
 
 ```php
-$fw = new Framework(YourDomainURL);
+// Framework class contructor takes one argument: link to current workspace
+$fw = new Framework('http://your.domain.url/');
 
-$fw->setSets(array(
-    // sets' names
-    // ex. 'page.php'
-));
-
-$fw->setTitles(array(
-    // titles for sets
-    // ex. 'page.php' => 'Title'
-));
-
-$fw->setMetas(array(
-    // custom meta tags files for sets
-    // ex. 'page.php' => '{{DOMAIN_URL}}fw/uncommon/page_meta.html'
-));
-$fw->setLinks(array(
-    // custom stylesheets for sets
-    // ex. 'page.php' => '{{DOMAIN_URL}}fw/uncommon/page_link.html'
-));
-$fw->setScripts(array(
-    // custom scripts links for sets
-    // ex. 'page.php' => '{{DOMAIN_URL}}fw/uncommon/page_script.html'
-));
+$fw->add_component('your_component', '{{domain_url}}fw/components/your_component.html');
+// Framework will change {{domain_url}} to specified url above
+// This function adds new component to the components list
+// You have to pass the component's name and it's path
 ```
 
 Initialize framework in file with:
 
 ```php
 include('path_to_fw/main.php'); 
-$fw->set('setname');
 ```
 
-Output default head elements: 
+Output a component:
  
 ```php
-$fw->commonMeta();   // outputs fw/common/meta.html
-$fw->title();        // outputs title
-$fw->commonLink();   // outputs fw/common/link.html
-$fw->commonScript(); // outputs fw/common/script.html
+$fw->component('your_component');
 ```
 
-Output specific head elements for a pagename:
+Output a component with additional flags:
  
 ```php
-$fw->fullMeta();   // outputs commonMeta() and file from setMetas()
-$fw->title();      // outputs title
-$fw->fullLink();   // outputs commonLink() and file from setLinks()
-$fw->fullScript(); // outputs commonScript() and file from setScripts()
-```
+// This will output your component with changed {{name}} to Patrick and {{year}} to 2018
+$fw->component('your_component', array( 'replace' => array('name' => 'Patrick', 'year'=>'2018') ));
 
-Output html code:
+// This will output your component with changed {{title}} to Document (used in rendering <head> tags)
+$fw->component('your_component', array( 'render' => array('title' => 'Document') ));
 
-```php
-$fw->header(); // outputs fw/common/header.html file
-$fw->navbar(); // outputs fw/common/navbar.html file
-$fw->footer(); // outputs fw/common/footer.html file
-```
+// This is used in rendering <nav> tags (full explanation at the bottom)
+$fw->component('your_component', array( 'render' => array('page' => 'index') ));
 
-## Using different set's name
-You can pass set's name into framework functions like: 
-
-* `fullMeta`
-* `title`
-* `fullLink`
-* `fullScript`
-
-in order to get specific title, meta tags, links or scripts for given set's name
-
-```php
-// example:
-$fw->set('page1.php');
-
-$fw->title();            // will output title for set with name 'page1.php'
-$fw->title('page2.php'); // will output title for set with name 'page2.php' 
+// You can use render and replace at the same time!
 ```
 
 ## Login extension
@@ -209,7 +168,7 @@ Example: (edit data operation is selected)
 ```
 
 ## Navbar tricks
-In your `fw/common/navbar.html` you can place in class special element `{{is:setname}}`
+In your *navbar* component you can place in class special element `{{is:page}}` (*page* equals to given value in `'render' => array('page' => 'index')`
 
 ```html
 <!-- example -->
@@ -223,10 +182,10 @@ In your `fw/common/navbar.html` you can place in class special element `{{is:set
 </div>
 ```
 
-When `$fw->navbar()` is triggered, it will output navbar.html and change this special element into `active` if current set's name matches with the `{{is:setname}}`
+When you output a component with flag render where page name is given, it will change this special element into `active` if given page name matches with the `{{is:page}}`
 
 ```html
-<!-- result (current set's name is 'page1.php') -->
+<!-- result (current page name is 'page1.php') -->
 <div class="nav">
     <div class="nav-item active">
         <a href="page1.php">Page 1</a>
@@ -237,16 +196,4 @@ When `$fw->navbar()` is triggered, it will output navbar.html and change this sp
 </div>
 ```
 
-If you have run `$fw->setNavbarCurrent('classNameForActiveElement')` then it will change the `{{is:setname}}` into a new given class name
-
-```php
-<?php $fw->setNavbarCurrent('nav-active'); ?>
-<!-- result (current set's name is 'page1.php') -->
-...
-    <div class="nav-item nav-active">
-...
-    <div class="nav-item {{is:page2.php}}">
-...
-```
-
-You can run `$fw->navbar('setname')` so that it will try to match given set's name with the `{{is:setname}}` special tag
+You can change `active` class name to other class names by changing the `$fw->navbarActive` variable.

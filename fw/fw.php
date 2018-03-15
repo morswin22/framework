@@ -11,36 +11,57 @@ class Framework {
         @session_start();
 
         $this->domainURL = $domainURL;
-
-        $this->commonMeta = file_get_contents($this->domainURL.'fw/common/meta.html');
-
-        $this->commonLink = file_get_contents($this->domainURL.'fw/common/link.html');
-        $this->commonLink = str_replace('{{DOMAIN_URL}}',$this->domainURL,$this->commonLink);
-        
-        $this->commonScript = file_get_contents($this->domainURL.'fw/common/script.html');
-        $this->commonScript = str_replace('{{DOMAIN_URL}}',$this->domainURL,$this->commonScript);
     
-        $this->header = file_get_contents($this->domainURL.'fw/common/header.html');
-        $this->header = str_replace('{{DOMAIN_URL}}',$this->domainURL,$this->header);
-    
-        $this->navbar = file_get_contents($this->domainURL.'fw/common/navbar.html');
-        $this->navbar = str_replace('{{DOMAIN_URL}}',$this->domainURL,$this->navbar);
+        $this->componets = array();
 
-        $this->footer = file_get_contents($this->domainURL.'fw/common/footer.html');
-        $this->footer = str_replace('{{DOMAIN_URL}}',$this->domainURL,$this->footer);
-    
-        $this->navbarCurrent = 'active';
-
-        $this->setSets(array());
-        $this->setTitles(array());
-        $this->setMetas(array());
-        $this->setLinks(array());
-        $this->setScripts(array());
+        $this->navbarActive = 'active';
 
         $this->db = array();
         $this->db_access = false;
         $this->db_users = array();
     }
+
+    // vanilla 
+
+    function add_component($name, $path, $flags = array()) {
+        $file = file_get_contents(str_replace('{{domain_url}}', $this->domainURL, $path));
+        $file = str_replace('{{domain_url}}', $this->domainURL, $file);
+        $this->components[$name] = $file;
+    }
+
+    function component($name, $flags = array()) {
+        if (isset($this->components[$name])) {
+            $res = $this->components[$name];
+            if (count($flags) > 0) {
+                foreach($flags as $fkey => $flag) {
+                    switch ($fkey) {
+                        case 'render':
+                            foreach ($flag as $p => $value) {
+                                switch ($p) {
+                                    case 'title':
+                                        $res = str_replace('{{title}}',$value,$res);
+                                        break;
+                                    case 'page':
+                                        $res = str_replace('{{is:'.$value.'}}', $this->navbarActive, $res);
+                                        break;
+                                }
+                            }
+                            break;
+                        case 'replace':
+                            foreach ($flag as $p => $value) {
+                                $res = str_replace('{{'.$p.'}}',$value,$res);
+                            }
+                            break;
+                    }
+                }
+            }
+            echo $res;
+        } else {
+            $this->error(500, 'This component does not exist.');
+        }
+    }
+
+    // db exst
 
     function db_register($name, $pass) {
         $this->db_users[$name] = $pass;
@@ -60,79 +81,11 @@ class Framework {
         $this->db_access = false;
     }
 
-    function header() {
-        echo $this->header;
-    }
-
-    function navbar($page = "?") {
-        $page = $this->pageName($page);
-        $navbar = str_replace('{{is:'.$page.'}}',$this->navbarCurrent,$this->navbar);
-        echo $navbar;
-    }
-
-    function footer() {
-        echo $this->footer;
-    }
-
     function add_db($name, $params, $idp) {
         $this->db[$name] = new FrameworkDatabase($name, $params, $idp);
     }
 
-    function set($set) {
-        if (in_array($set, $this->sets)) {
-            $this->pageSet = $set;
-        } else {
-            $this->error(500, 'Unknown page set -> '.$set);
-        }
-    }
-
-    function title($page = "?") {
-        $page = $this->pageName($page);
-        if (isset($this->titles[$page])) {
-            echo '<title>'.$this->titles[$page].'</title>'.PHP_EOL;
-        } else {
-            $this->error(500, 'This page does not have a title -> '.$page);
-        }
-    }
-
-    function commonMeta() {
-        echo $this->commonMeta;
-    }
-    function commonLink() {
-        echo $this->commonLink;
-    }
-    function commonScript() {
-        echo $this->commonScript;
-    }
-
-    function fullMeta($page="?") {
-        $page = $this->pageName($page);
-        $this->commonMeta();
-        if(isset($this->metas[$page])) {
-            $meta = file_get_contents(str_replace('{{DOMAIN_URL}}',$this->domainURL,$this->metas[$page]));
-            echo str_replace('{{DOMAIN_URL}}',$this->domainURL,$meta);
-        } else {
-            $this->error(500, 'This page does not have meta tags -> '.$page);
-        }
-    }
-    function fullLink($page="?") {
-        $page = $this->pageName($page);
-        $this->commonLink();
-        if(isset($this->links[$page])) {
-            echo str_replace('{{DOMAIN_URL}}',$this->domainURL,$this->links[$page]);
-        } else {
-            $this->error(500, 'This page does not have any links -> '.$page);
-        }
-    }
-    function fullScript($page="?") {
-        $page = $this->pageName($page);
-        $this->commonScript();
-        if(isset($this->scripts[$page])) {
-            echo str_replace('{{DOMAIN_URL}}',$this->domainURL,$this->scripts[$page]);
-        } else {
-            $this->error(500, 'This page does not have any scripts -> '.$page);
-        }
-    }
+    // login exst
 
     function register($data) {
         $checksum = true;
@@ -279,38 +232,7 @@ class Framework {
         $this->login_cache();
     }
 
-    function setNavbarCurrent($new) {
-        $this->navbarCurrent = $new;
-    }
-
-    function setMetas($x) {
-        $this->metas = $x;
-    }
-    function setLinks($x) {
-        $this->links = $x;
-    }
-    function setScripts($x) {
-        $this->scripts = $x;
-    }
-
-    function setTitles($titles) {
-        $this->titles = $titles;
-    }
-
-    function setSets($sets) {
-        $this->sets = $sets;
-    }
-
-    private function pageName($page) {
-        if ($page == "?") {
-            if (isset($this->pageSet)) {
-                $page = $this->pageSet;
-            } else {
-                $page = basename(__FILE__); 
-            }
-        }
-        return $page;
-    }
+    // error
 
     private function error($err = 500, $msg='Internal error.') {
         http_response_code($err);
