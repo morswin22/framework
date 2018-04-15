@@ -1,4 +1,4 @@
-<?php include('main.php');$get = $_GET;include('lib/Parsedown.php');$mdparser =new Parsedown(); if (isset($_POST['fw-db-name'], $_POST['fw-db-pass'])) {$fw->db_login($_POST['fw-db-name'], $_POST['fw-db-pass']);header('Location: ./db.php'); exit();} if (isset($_SESSION['fw-db-user'])) {$d=$_SESSION['fw-db-user']; $fw->db_login($d['name'],$d['pass']);} if (isset($get["logout"])) {$fw->db_logout(); header('Location: ./db.php'); exit();} ?><!DOCTYPE html>
+<?php include('../main.php');$get = $_GET;include('../lib/Parsedown.php');$mdparser =new Parsedown(); if (isset($_POST['fw-db-name'], $_POST['fw-db-pass'])) {$fw->db_login($_POST['fw-db-name'], $_POST['fw-db-pass']);header('Location: ./'); exit();} if (isset($_SESSION['fw-db-user'])) {$d=$_SESSION['fw-db-user']; $fw->db_login($d['name'],$d['pass']);} if (isset($get["logout"])) {$fw->db_logout(); header('Location: ./'); exit();} ?><!DOCTYPE html>
 <?php
 
 if (isset($_POST['dbname'], $_POST['query'], $_POST['operation'])) {
@@ -55,7 +55,7 @@ if (isset($_POST['dbname'], $_POST['query'], $_POST['operation'])) {
                 break;
             }
 
-            header('Location: ./db.php?dbname='.$dbname.'&operation='.$_POST['operation'].'&query='.urlencode($_POST['query']));
+            header('Location: ./?dbname='.$dbname.'&operation='.$_POST['operation'].'&query='.urlencode($_POST['query']));
             exit();
 
         } catch (Exception $e) {
@@ -84,13 +84,13 @@ if (isset($_POST['users'], $_POST['operation'])) {
 
     }
 
-    header('Location: ./db.php?users');
+    header('Location: ./?users');
     exit();
 }
 
 if (isset($_GET['users'], $_GET['delete'])) {
     $fw->rm_user($_GET['delete']);
-    header('Location: ./db.php?users');
+    header('Location: ./?users');
     exit();
 }
 
@@ -127,7 +127,7 @@ if (isset($_GET['users'], $_GET['delete'])) {
     
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container">    
-            <a class="navbar-brand" href="./db.php">Database Access</a>
+            <a class="navbar-brand" href="./">Database Access</a>
             <?php if ($fw->db_access == true) { ?>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
@@ -136,7 +136,7 @@ if (isset($_GET['users'], $_GET['delete'])) {
             <div class="collapse navbar-collapse" id="navbar">
                 <ul class="navbar-nav ml-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="./db.php?logout">Logout</a>
+                        <a class="nav-link" href="./?logout">Logout</a>
                     </li>
                 </ul>
             </div>
@@ -157,7 +157,7 @@ if (isset($_GET['users'], $_GET['delete'])) {
                     <div class="col">
                         <ul class="list-group mb-3">
                             <li class="list-group-item list-group-item-secondary">Users database</li>
-                            <a href="./db.php?users" class="list-group-item list-group-item-action <?php if(isset($_GET['users'])) {echo "active";} ?>">Framework users</a>
+                            <a href="./?users" class="list-group-item list-group-item-action <?php if(isset($_GET['users'])) {echo "active";} ?>">Framework users</a>
                         </ul>
                     </div>
                 </div>
@@ -178,7 +178,7 @@ if (isset($_GET['users'], $_GET['delete'])) {
                                 } else {
                                     $rep = '';
                                 }
-                                $str = '<a href="./db.php?dbname={{DB_NAME}}" class="list-group-item list-group-item-action {{is:active}}">{{DB_NAME}}</a>';
+                                $str = '<a href="./?dbname={{DB_NAME}}" class="list-group-item list-group-item-action {{is:active}}">{{DB_NAME}}</a>';
                                 $str = str_replace('{{DB_NAME}}',$db->name,$str);
                                 $str = str_replace('{{is:active}}',$rep,$str);
                                 echo $str;
@@ -241,9 +241,9 @@ if (isset($_GET['users'], $_GET['delete'])) {
                         ?>
                         <table class="table table-bordered table-hover table-striped"><thead><?php
                         foreach($fw->db[$dbname]->cols as $col) {
-                            ?><th class="sort-control"><a href="?dbname=<?=$dbname?>&query=<?=urlencode($q)?>&sort=<?=$col?>,asc" class="sort-icon"><img src="lib/img/sort_up.png"></a>
+                            ?><th class="sort-control"><a href="?dbname=<?=$dbname?>&query=<?=urlencode($q)?>&sort=<?=$col?>,asc" class="sort-icon"><img src="../lib/img/sort_up.png"></a>
                                 <?=$col?>
-                                <a href="?dbname=<?=$dbname?>&query=<?=urlencode($q)?>&sort=<?=$col?>,desc" class="sort-icon"><img src="lib/img/sort_down.png"></a></th><?php
+                                <a href="?dbname=<?=$dbname?>&query=<?=urlencode($q)?>&sort=<?=$col?>,desc" class="sort-icon"><img src="../lib/img/sort_down.png"></a></th><?php
                         }
                         ?></thead><?php
 
@@ -287,7 +287,7 @@ if (isset($_GET['users'], $_GET['delete'])) {
                     $users = $fw->getUsers();
                     foreach($users as $user) {
                         ?><tr><form method="post">
-                        <td><a href="./db.php?users&delete=<?=$user[$fw->user_idp]?>"><img src="./lib/img/btn_delete.png" style="width: 23px; height: 23px; margin-top: 8.5px;"></a></td>
+                        <td><a href="./?users&delete=<?=$user[$fw->user_idp]?>"><img src="../lib/img/btn_delete.png" style="width: 23px; height: 23px; margin-top: 8.5px;"></a></td>
                         <?php
                         foreach($user as $col => $value) {
                             $v = $value;
@@ -300,7 +300,7 @@ if (isset($_GET['users'], $_GET['delete'])) {
                             ?><td><?=$inputH?><input class="form-control" type="text" <?=$name?> value="<?=$v?>" placeholder="<?=$col?>" <?=$e?> <?=$input?> /></td><?php
                         }
                         ?><td><input hidden="hidden" name="operation" value="edit" ><input hidden="hidden" name="users" >
-                        <button type="submit" style="width: 23px; height: 23px; margin-top: 8.5px; background: url('lib/img/btn_edit.png') no-repeat; background-size: cover; border: 0; cursor:pointer;"></button></td>
+                        <button type="submit" style="width: 23px; height: 23px; margin-top: 8.5px; background: url('../lib/img/btn_edit.png') no-repeat; background-size: cover; border: 0; cursor:pointer;"></button></td>
                         </form></tr><?php
                     }
                     ?></tbody></table>
