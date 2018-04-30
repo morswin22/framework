@@ -1,0 +1,75 @@
+@import url('https://fonts.googleapis.com/css?family=Lato:400,700,900&subset=latin-ext');
+
+/* font-family: 'Lato', sans-serif; */
+
+html, body {
+    margin: 0;
+    font-family: 'Lato', sans-serif;
+}
+
+div.container {
+    display: grid;
+    grid-template-areas: 
+        "navbar";
+}
+
+nav#navbar {
+    padding: 0 calc((100% - 1200px) / 2);
+    font-size: 20px;
+    background-color: #EB5757;
+    height: 60px;
+    grid-area: navbar;
+    display: grid;
+    grid-auto-columns: 50px 280px auto 380px 50px;
+    grid-template-areas: 
+        ". brand . links .";
+}
+
+nav#navbar a {
+    color: #FFFFFF;
+    text-decoration: none;
+}
+
+a#brand {
+    grid-area: brand;
+    font-weight: 700;
+    align-self: center;
+}
+
+div#navbar-links {
+    grid-area: links;
+    text-align: right;
+    align-self: center;
+    display: none;
+}
+
+div#navbar-links a {
+    margin-left: 20px;
+}
+
+/* Extra small devices (phones, 600px and down) */
+@media only screen and (max-width: 600px) {
+    
+} 
+
+/* Small devices (portrait tablets and large phones, 600px and up) */
+@media only screen and (min-width: 600px) {
+    
+} 
+
+/* Medium devices (landscape tablets, 768px and up) */
+@media only screen and (min-width: 768px) {
+    nav#navbar div#navbar-links {
+        display: block!important;
+    }
+} 
+
+/* Large devices (laptops/desktops, 992px and up) */
+@media only screen and (min-width: 992px) {
+    
+} 
+
+/* Extra large devices (large laptops and desktops, 1200px and up) */
+@media only screen and (min-width: 1200px) {
+
+}
