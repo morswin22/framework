@@ -1,8 +1,24 @@
 <nav id="navbar">
     <a id="brand" href="./">INTRO-KSERO-CENTRUM</a>
+    <i class="material-icons" id="navbar-controller">&#xE5D2;</i>
     <div id="navbar-links">
         <a href="services.html">USŁUGI</a>
         <a href="location.html">LOKALIZACJA</a>
         <a href="contact.html" >KONTAKT</a>
     </div>
+    <script>
+        (function() {
+            let btn = document.querySelector('#navbar-controller');
+            let links = document.querySelector('#navbar-links');
+            btn.addEventListener('click', function(e) {
+                if (links.getAttribute('data-expanded') == "false" || !links.getAttribute('data-expanded')) {
+                    
+                    links.setAttribute('data-expanded', true);
+                } else {
+
+                    links.setAttribute('data-expanded', false);
+                }
+            });
+        })();
+    </script>
 </nav>

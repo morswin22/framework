@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css?family=Lato:400,700,900&subset=latin-ext');
+@import url('https://fonts.googleapis.com/icon?family=Material+Icons');
 
 /* font-family: 'Lato', sans-serif; */
 
@@ -20,9 +21,9 @@ nav#navbar {
     height: 60px;
     grid-area: navbar;
     display: grid;
-    grid-auto-columns: 50px 280px auto 380px 50px;
+    grid-auto-columns: 50px 280px auto 32px 50px;
     grid-template-areas: 
-        ". brand . links .";
+        ". brand . btn .";
 }
 
 nav#navbar a {
@@ -34,6 +35,16 @@ a#brand {
     grid-area: brand;
     font-weight: 700;
     align-self: center;
+}
+
+i#navbar-controller{
+    color: #FFFFFF;
+    grid-area: btn;
+    align-self: center;
+    font-size: 32px;
+    width: 32px;
+    height: 32px;
+    display: block;
 }
 
 div#navbar-links {
@@ -61,6 +72,14 @@ div#navbar-links a {
 @media only screen and (min-width: 768px) {
     nav#navbar div#navbar-links {
         display: block!important;
+    }
+    i#navbar-controller {
+        display: none!important;
+    }
+    nav#navbar {
+        grid-auto-columns: 50px 280px auto 380px 50px;
+        grid-template-areas: 
+            ". brand . links .";
     }
 } 
 
