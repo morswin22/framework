@@ -1,24 +1,22 @@
-<nav id="navbar">
-    <a id="brand" href="./">INTRO-KSERO-CENTRUM</a>
-    <i class="material-icons" id="navbar-controller">&#xE5D2;</i>
-    <div id="navbar-links">
-        <a href="services.html">USŁUGI</a>
-        <a href="location.html">LOKALIZACJA</a>
-        <a href="contact.html" >KONTAKT</a>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+        <a class="navbar-brand" href="./">INTRO-KSERO-CENTRUM</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+      
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+              <a class="nav-link" href="./services.php">USŁUGI</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="./location.php">LOKALIZACJA</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="./contact.php">KONTAKT</a>
+            </li>
+          </ul>
+        </div>
     </div>
-    <script>
-        (function() {
-            let btn = document.querySelector('#navbar-controller');
-            let links = document.querySelector('#navbar-links');
-            btn.addEventListener('click', function(e) {
-                if (links.getAttribute('data-expanded') == "false" || !links.getAttribute('data-expanded')) {
-                    
-                    links.setAttribute('data-expanded', true);
-                } else {
-
-                    links.setAttribute('data-expanded', false);
-                }
-            });
-        })();
-    </script>
 </nav>
