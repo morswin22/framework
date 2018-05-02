@@ -1,13 +1,18 @@
+@font-face {
+    font-family: 'Renfrew';
+    src: url('Renfrew.ttf') format('truetype'); /* Chrome 4+, Firefox 3.5, Opera 10+, Safari 3—5 */
+}  
+
 h1#brand {
     margin: 125px 0!important;
     color: #EB5757!important;
     font-size: 64px!important;
-    font-weight: bold!important;
     font-style: normal!important;
     line-height: normal!important;
     position: relative;
     right: 0px;
     text-align: center;
+    font-family: 'Renfrew', sans-serif!important;
 }
 
 a.button {
