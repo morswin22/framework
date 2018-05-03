@@ -43,9 +43,23 @@ a.button i {
     justify-self: center;
 }
 a.button span {
+    display: block;
     align-self: center;
     grid-area: text;
 }
+/* a.button span::after {
+    position: absolute;
+    left: 0;
+    content: '';
+    height: 1px;
+    background: #000;
+    transition: all 0.5s linear;
+    width: 0;
+    bottom: -1px;
+}
+a.button:hover span::after {
+    width: 100%;
+} */
 a.button#main {
     background: #EB5757!important;
     color: #FFFFFF!important;
