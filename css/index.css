@@ -1,10 +1,10 @@
 @font-face {
     font-family: 'Renfrew';
-    src: url('Renfrew.ttf') format('truetype'); /* Chrome 4+, Firefox 3.5, Opera 10+, Safari 3—5 */
+    src: url('Renfrew.ttf') format('truetype');
 }  
 
 h1#brand {
-    margin: 125px 0!important;
+    margin: 30px 0!important;
     color: #EB5757!important;
     font-size: 64px!important;
     font-style: normal!important;
@@ -52,6 +52,25 @@ a.button#main {
     font-weight: bold!important;
 }
 
+span.display-none-466,
+span.display-none-991 {
+    opacity: 0;
+    font-size: 0px!important;
+}
+
+@media only screen and (min-width: 467px) {
+    span.display-none-466 {
+        opacity: 1;
+        font-size: 64px!important;
+    }
+}
+@media only screen and (min-width: 992px) {
+    span.display-none-991 {
+        opacity: 1;
+        font-size: 64px!important;
+    }
+}
+
 /* Extra small devices (phones, 600px and down) */
 @media only screen and (max-width: 576px) {
 
@@ -59,13 +78,16 @@ a.button#main {
 
 /* Small devices (portrait tablets and large phones, 600px and up) */
 @media only screen and (min-width: 576px) {
-
+    h1#brand {
+        margin: 50px 0!important;
+    }
 } 
 
 /* Medium devices (landscape tablets, 768px and up) */
 @media only screen and (min-width: 769px) {
     h1#brand {
         text-align: left;
+        margin: 80px 0!important;
     }
     a.button {
         width: 310px;
@@ -74,7 +96,9 @@ a.button#main {
 
 /* Large devices (laptops/desktops, 992px and up) */
 @media only screen and (min-width: 992px) {
-
+    h1#brand {
+        margin: 125px 0!important;
+    }
 } 
 
 /* Extra large devices (large laptops and desktops, 1200px and up) */

@@ -13,9 +13,9 @@
     
     <?=$fw->component('navbar')?>
 
-    <div class="container">
+    <div class="container mb-3">
 
-        <h1 id="brand">INTRO-KSERO-CENTRUM</h1>
+        <h1 id="brand">INTRO<span class="display-none-466">-</span>KSERO<span class="display-none-991">-</span>CENTRUM</h1>
 
         <a href="services.php" class="button" id="main">
             <i class="material-icons">&#xE85D;</i><span>USŁUGI</span>

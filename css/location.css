@@ -1,0 +1,23 @@
+div.centered {
+    padding: 0 20px;
+    max-width: 728px;
+    margin: 0 auto;
+    display: grid;
+    grid-auto-columns: 32px 3px auto;
+    grid-template-areas: 
+        "icon . text";
+}
+
+div.centered i {
+    grid-area: icon;
+    display: block;
+    width: 32px;
+    height: 32px;
+    font-size: 32px;
+}
+
+div.centered span {
+    grid-area: text;
+    font-size: 20px;
+    align-self: center;
+}
