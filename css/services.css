@@ -31,12 +31,11 @@ button.btn-outline-danger:active {
 }
 
 div.service-container {
-    padding: 11px 9px; /* 150px h*/
-    /* margin-bottom: 20px; */
-    min-height: 150px;
+    padding: 11px 9px;
+    min-height: 100px;
     display: grid;
     grid-auto-columns: auto;
-    grid-auto-rows: 45px auto;
+    grid-auto-rows: auto auto;
     grid-template-areas: 
         "name"
         "desc";
@@ -53,6 +52,7 @@ h4.service-name {
 /* Medium devices (landscape tablets, 768px and up) */
 @media only screen and (min-width: 769px) {
     div.service-container {
+        min-height: 150px;
         grid-auto-columns: 150px 20px auto;
         grid-template-areas: 
             "imgs . name"

@@ -107,11 +107,9 @@
 
                 foreach ($services as $service) {
                         $areImages = false;
-                        $hL = ''; $hR = '';
                         $images = explode('!', $service['images']);
                         if (count($images) > 0 && $images[0] !== '') {
                             $areImages = true;
-                            $hL = 'd-md-block'; // other stuff
                         }
                         ?>
                         <div class="service-container mt-2">
@@ -231,7 +229,7 @@
                                             setTimeout(function(){
                                                 var h = $(div.parent()).height();
                                                 div.css({'height': h+'px'});
-                                            },50);
+                                            },50); // TODO: ERROR: this sometimes does not catch up
                                         </script>
                                         <style>
                                             #outer-<?=$id?> {
@@ -244,7 +242,7 @@
                                     <?php } ?>
                                 </div>
                                 <?php } else { ?>
-                                    <i class="material-icons" style="font-size: 150px; width: 150px; height:150px; display: block; color: #BFBFBF">&#xE251;</i>
+                                    <i class="material-icons" style="font-size: 150px; width: 150px; height:150px; display: block; color: #BFBFBF; cursor: default; ">&#xE251;</i>
                                 <?php } ?>
                             </div>
                             <h4 class="service-name"><?=$service['name']?></h4>
