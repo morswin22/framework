@@ -6,11 +6,11 @@ function is_regex($str) {
 
 class Framework {
 
-    public function __construct($domainURL) {
+    public function __construct($domainURL, $dir = '') {
 
         @session_start();
 
-        $this->domainURL = $domainURL;
+        $this->domainURL = $domainURL . $dir;
     
         $this->componets = array();
 
@@ -21,6 +21,9 @@ class Framework {
         $this->db_users = array();
 
         $this->trafficEnabled = false;
+        $this->traffic_access = false;
+        $this->traffic_helper = $domainURL;
+        $this->traffic_users = array();
     }
 
     // vanilla 
@@ -239,16 +242,47 @@ class Framework {
     function traffic($bool) {
         $this->trafficEnabled = $bool;
         if ($bool) {
-            $viewingPath = $this->domainURL . $_SERVER['PHP_SELF'];
-            if (!is_file(__DIR__.'/traffic/entries.json')) { file_put_contents(__DIR__.'/traffic/entries.json', '{entries:{}}'); }
-            $data = json_decode(file_get_contents(__DIR__.'/traffic/entries.json'),true);
+            $viewingPath = $this->traffic_helper . $_SERVER['PHP_SELF'];
+            $data = $this->getTraffic();
             if (isset($data['entries'][$viewingPath])) {
                 $data['entries'][$viewingPath]++;
             } else {
                 $data['entries'][$viewingPath] = 1;
             }
-            file_put_contents(__DIR__.'/traffic/entries.json', json_encode($data));
+            file_put_contents(__DIR__.'/trafficdata/entries.json', json_encode($data));
         }
+    }
+
+    function getTraffic() {
+        if (!is_file(__DIR__.'/trafficdata/entries.json')) { file_put_contents(__DIR__.'/trafficdata/entries.json', '{entries:{}}'); }
+        return json_decode(file_get_contents(__DIR__.'/trafficdata/entries.json'),true);
+    }
+
+    function getSortedTraffic($flag = 'asc') {
+        $data = $this->getTraffic();
+        natsort($data['entries']);
+        if ($flag == 'desc') {
+            $data['entries'] = array_reverse($data['entries']);
+        }
+        return $data;
+    }
+
+    function traffic_register($name, $pass) {
+        $this->traffic_users[$name] = $pass;
+    }
+    function traffic_login($name, $pass) {
+        if (isset($this->traffic_users[$name])) {
+            if ($this->traffic_users[$name] === $pass) {
+                $this->traffic_access = true;
+                $_SESSION['fw-traffic-user'] = array('name'=>$name, 'pass'=>$pass);
+            }
+        }
+    }
+    function traffic_logout() {
+        if (isset($_SESSION['fw-traffic-user'])) {
+            unset($_SESSION['fw-traffic-user']);
+        }
+        $this->traffic_access = false;
     }
 
     // error
