@@ -19,6 +19,8 @@ class Framework {
         $this->db = array();
         $this->db_access = false;
         $this->db_users = array();
+
+        $this->trafficEnabled = false;
     }
 
     // vanilla 
@@ -230,6 +232,23 @@ class Framework {
         $this->user_idp = $id_param;
         $this->user_chkp = $check_param;
         $this->login_cache();
+    }
+
+    // traffic exst
+
+    function traffic($bool) {
+        $this->trafficEnabled = $bool;
+        if ($bool) {
+            $viewingPath = $this->domainURL . $_SERVER['PHP_SELF'];
+            if (!is_file(__DIR__.'/traffic/entries.json')) { file_put_contents(__DIR__.'/traffic/entries.json', '{entries:{}}'); }
+            $data = json_decode(file_get_contents(__DIR__.'/traffic/entries.json'),true);
+            if (isset($data['entries'][$viewingPath])) {
+                $data['entries'][$viewingPath]++;
+            } else {
+                $data['entries'][$viewingPath] = 1;
+            }
+            file_put_contents(__DIR__.'/traffic/entries.json', json_encode($data));
+        }
     }
 
     // error
