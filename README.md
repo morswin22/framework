@@ -146,7 +146,7 @@ if ($row = $query->fetch()) {
 ```
 
 #### Accessing databases from the GUI
-Get access to `fw/db.php` by adding to `fw/main.php` new database user: `db_register()`. This function accepts name and password for the new user.
+Get access to `fw/db/` by adding to `fw/main.php` new database user: `db_register()`. This function accepts name and password for the new user.
 
 Your added databases are listed at the left side of screen. After selecting a database you will see a table where the columns and rows are displayed. Above that there is an input textarea and operation selector. You can select one out of four functions:
 
